@@ -26,3 +26,31 @@ C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\bal.xnb
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\blauweSpeler.xnb
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\rodeSpeler.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\bal.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\blauweSpeler.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\rodeSpeler.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Game9.exe
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Game9.pdb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\MonoGame.Framework.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.MediaFoundation.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.XAudio2.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.DXGI.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct3D11.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct2D1.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.XInput.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct3D9.dll
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\MonoGame.Framework.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.MediaFoundation.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.XAudio2.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.DXGI.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct3D11.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct2D1.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.XInput.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.csprojAssemblyReference.cache
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.csproj.CoreCompileInputs.cache
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.csproj.CopyComplete
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.exe
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.pdb
