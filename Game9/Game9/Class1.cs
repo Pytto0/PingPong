@@ -10,10 +10,10 @@ namespace Game9
     public class Bal
     {
         public int Direction { get; set; }
-        public int Speed { get; set; }
+        public double Speed { get; set; }
         public Vector2 Position { get; set; }
 
-        public Bal(int direction, int speed, Vector2 position) {
+        public Bal(int direction, double speed, Vector2 position) {
             Direction = direction;
             Speed = speed;
             Position = position;

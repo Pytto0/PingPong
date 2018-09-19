@@ -15,19 +15,21 @@ namespace Game9
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Vector2 balBegin = new Vector2(300, 400);
-        const double balAcceleration = 0.1; //extra speed gained per gametick.
+        const double balAcceleration = 0.01; //extra speed gained per gametick.
         const int screenwidth = 1200;
         const int screenheight = 800;
         Bal objbal;
+        int scoreBlue = 0;
+        int scoreRed = 0;
         
 
         public Game1()
         {
-            
+            this.Window.Position = new Point(600, 0);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 1200;
-            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = screenwidth;
+            graphics.PreferredBackBufferWidth = screenheight;
             objbal = new Bal(1, 0, balBegin);
             ResetGame();
             
@@ -78,7 +80,17 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
-
+        private Vector2 calculateNewBalPos()
+        {
+            Vector2 pos = objbal.Position;
+            float x = pos.X;
+            float y = pos.Y;
+            int dir = objbal.Direction;
+            double speed = objbal.Speed;
+            x = (float) (x + Math.Cos(dir) * speed);
+            y = (float) (y + Math.Sin(dir) * speed);
+            return new Vector2(x, y);
+        }
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -86,15 +98,14 @@ namespace Game9
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            Vector2 pos = objbal.Position;
-            float x = pos.X;
-            float y = pos.Y;
-            int dir = objbal.Direction;
-            int speed = objbal.Speed;
-            x = (float) (x + Math.Cos(dir) * speed * 1);
-            y = (float) (y + Math.Sin(dir) * speed * 1);
-            Vector2 newPos = new Vector2(x, y);
-            objbal.Position = newPos;
+            objbal.Position = calculateNewBalPos();
+            objbal.Speed += balAcceleration;
+            float x = objbal.Position.X;
+            float y = objbal.Position.Y;
+            if (x > screenwidth)
+            {
+                ResetGame();
+            }
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
