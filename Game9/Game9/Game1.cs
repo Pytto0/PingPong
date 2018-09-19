@@ -1,21 +1,36 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Game9
 {
+
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Game1 : Game
     {
+        Texture2D bal;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Vector2 balBegin = new Vector2(300, 400);
+        const double balAcceleration = 0.1; //extra speed gained per gametick.
+        const int screenwidth = 1200;
+        const int screenheight = 800;
+        Bal objbal;
+        
 
         public Game1()
         {
+            
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferHeight = 1200;
+            graphics.PreferredBackBufferWidth = 800;
+            objbal = new Bal(1, 0, balBegin);
+            ResetGame();
+            
         }
 
         /// <summary>
@@ -31,6 +46,17 @@ namespace Game9
             base.Initialize();
         }
 
+        protected void ResetGame()
+        {
+            Random rnd = new Random();
+            objbal.Speed = 5;
+            objbal.Position = balBegin;
+            if (rnd.Next(1, 2) == 1)
+                objbal.Direction = rnd.Next(-45, 45);
+            else
+                objbal.Direction = rnd.Next(135, 225);
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -39,6 +65,7 @@ namespace Game9
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            bal = Content.Load<Texture2D>("Graphics/bal");
 
             // TODO: use this.Content to load your game content here
         }
@@ -59,6 +86,17 @@ namespace Game9
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            Vector2 pos = objbal.Position;
+            float x = pos.X;
+            float y = pos.Y;
+            int dir = objbal.Direction;
+            int speed = objbal.Speed;
+            x = (float) (x + Math.Cos(dir) * speed * 1);
+            y = (float) (y + Math.Sin(dir) * speed * 1);
+            Vector2 newPos = new Vector2(x, y);
+            objbal.Position = newPos;
+
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
@@ -83,7 +121,10 @@ namespace Game9
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
+            spriteBatch.Begin();
+            spriteBatch.Draw(bal, objbal.Position, Color.White);
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 
