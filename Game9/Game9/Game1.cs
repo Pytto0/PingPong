@@ -16,7 +16,7 @@ namespace Game9
         Texture2D bluePlayer;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Vector2 ballBegin = new Vector2(300, 400);
+        Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const double ballAcceleration = 0; //extra speed gained per gametick.
         const int screenwidth = 1200;
         const int screenheight = 800;
@@ -25,7 +25,7 @@ namespace Game9
         int scoreRed = 0;
         
 
-        public Game1()
+        public Game1() 
         {
             this.Window.Position = new Point(600, 0);
             graphics = new GraphicsDeviceManager(this);
@@ -34,7 +34,6 @@ namespace Game9
             graphics.PreferredBackBufferWidth = screenwidth;
             objball = new Ball(1, 0, ballBegin);
             ResetGame();
-
         }
 
         /// <summary>
@@ -49,13 +48,13 @@ namespace Game9
 
             base.Initialize();
         }
-
+        
         protected void ResetGame()
         {
             Random rnd = new Random();
             objball.Speed = 5;
             objball.Position = ballBegin;
-            if (rnd.Next(1, 2) == 1)
+            if (rnd.Next(1, 3) == 1)
                 objball.Direction = rnd.Next(-45, 45);
             else
                 objball.Direction = rnd.Next(135, 225);
@@ -88,7 +87,7 @@ namespace Game9
             Vector2 pos = objball.Position;
             float x = pos.X;
             float y = pos.Y;
-            int dir = objball.Direction;
+            double dir = objball.Direction * Math.PI/180;
             double speed = objball.Speed;
             x = (float) (x + Math.Cos(dir) * speed);
             y = (float) (y + Math.Sin(dir) * speed);
@@ -115,7 +114,14 @@ namespace Game9
                 scoreBlue++;
                 ResetGame();
             }
-
+            if (y >= screenheight)
+            {
+               
+            }
+            if (y <= 0)
+            {
+                
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
