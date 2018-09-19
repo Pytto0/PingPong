@@ -17,7 +17,7 @@ namespace Game9
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
-        const double ballAcceleration = 0; //extra speed gained per gametick.
+        const double ballAcceleration = 0.01; //extra speed gained per gametick.
         const int screenwidth = 1200;
         const int screenheight = 800;
         Ball objball;
@@ -114,13 +114,9 @@ namespace Game9
                 scoreBlue++;
                 ResetGame();
             }
-            if (y >= screenheight)
+            if (y >= screenheight || y <= 0 )
             {
-               
-            }
-            if (y <= 0)
-            {
-                
+                objball.Direction = 360 - objball.Direction;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
