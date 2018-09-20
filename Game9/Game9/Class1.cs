@@ -17,8 +17,6 @@ namespace Game9
             Direction = direction;
             Speed = speed;
             Position = position;
-
-            
         }
     }
 }

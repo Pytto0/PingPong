@@ -21,6 +21,8 @@ namespace Game9
         const int screenwidth = 1200;
         const int screenheight = 800;
         Ball objball;
+        int RedYValue;
+        int BlueYValue;
         int scoreBlue = 0;
         int scoreRed = 0;
         
@@ -71,6 +73,8 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
+            RedYValue = 60;
+            BlueYValue = 60;
             // TODO: use this.Content to load your game content here
         }
 
@@ -94,10 +98,10 @@ namespace Game9
             return new Vector2(x, y);
         }
         /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+         /// Allows the game to run logic such as updating the world,
+         /// checking for collisions, gathering input, and playing audio.
+         /// </summary>
+         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             objball.Position = calculateNewballPos();
@@ -116,19 +120,27 @@ namespace Game9
             }
             if (y >= screenheight || y <= 0 )
             {
-                objball.Direction = 360 - objball.Direction;
+                objball.Direction = - objball.Direction;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                Exit();
-            }
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                Exit();
+                RedYValue = RedYValue - 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                RedYValue = RedYValue + 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                BlueYValue = BlueYValue - 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                BlueYValue = BlueYValue + 5;
             }
             // TEST
             // TODO: Add your update logic here
@@ -145,8 +157,8 @@ namespace Game9
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
             spriteBatch.Draw(ball, objball.Position, Color.White);
-            spriteBatch.Draw(bluePlayer, new Vector2(60,screenheight/2), Color.White);
-            spriteBatch.Draw(redPlayer, new Vector2(screenwidth-60, screenheight/2), Color.White);
+            spriteBatch.Draw(bluePlayer, new Rectangle(screenwidth-60,screenheight/2 + BlueYValue, 40,200), Color.White);
+            spriteBatch.Draw(redPlayer, new Rectangle(60, screenheight/2 + RedYValue, 40, 200), Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
