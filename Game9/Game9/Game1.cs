@@ -11,28 +11,31 @@ namespace Game9
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D bal;
+        Texture2D ball;
+        Texture2D redPlayer;
+        Texture2D bluePlayer;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Vector2 balBegin = new Vector2(300, 400);
-        const double balAcceleration = 0.01; //extra speed gained per gametick.
+        Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
+        const double ballAcceleration = 0.01; //extra speed gained per gametick.
         const int screenwidth = 1200;
         const int screenheight = 800;
-        Bal objbal;
+        Ball objball;
+        int RedYValue;
+        int BlueYValue;
         int scoreBlue = 0;
         int scoreRed = 0;
         
 
-        public Game1()
+        public Game1() 
         {
             this.Window.Position = new Point(600, 0);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = screenwidth;
-            graphics.PreferredBackBufferWidth = screenheight;
-            objbal = new Bal(1, 0, balBegin);
+            graphics.PreferredBackBufferHeight = screenheight;
+            graphics.PreferredBackBufferWidth = screenwidth;
+            objball = new Ball(1, 0, ballBegin);
             ResetGame();
-            
         }
 
         /// <summary>
@@ -47,16 +50,16 @@ namespace Game9
 
             base.Initialize();
         }
-
+        
         protected void ResetGame()
         {
             Random rnd = new Random();
-            objbal.Speed = 5;
-            objbal.Position = balBegin;
-            if (rnd.Next(1, 2) == 1)
-                objbal.Direction = rnd.Next(-45, 45);
+            objball.Speed = 5;
+            objball.Position = ballBegin;
+            if (rnd.Next(1, 3) == 1)
+                objball.Direction = rnd.Next(-45, 45);
             else
-                objbal.Direction = rnd.Next(135, 225);
+                objball.Direction = rnd.Next(135, 225);
         }
 
         /// <summary>
@@ -67,8 +70,11 @@ namespace Game9
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            bal = Content.Load<Texture2D>("Graphics/bal");
-
+            ball = Content.Load<Texture2D>("Graphics/bal");
+            bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
+            redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
+            RedYValue = 60;
+            BlueYValue = 60;
             // TODO: use this.Content to load your game content here
         }
 
@@ -80,45 +86,61 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
-        private Vector2 calculateNewBalPos()
+        private Vector2 calculateNewballPos()
         {
-            Vector2 pos = objbal.Position;
+            Vector2 pos = objball.Position;
             float x = pos.X;
             float y = pos.Y;
-            int dir = objbal.Direction;
-            double speed = objbal.Speed;
+            double dir = objball.Direction * Math.PI/180;
+            double speed = objball.Speed;
             x = (float) (x + Math.Cos(dir) * speed);
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
         /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+         /// Allows the game to run logic such as updating the world,
+         /// checking for collisions, gathering input, and playing audio.
+         /// </summary>
+         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            objbal.Position = calculateNewBalPos();
-            objbal.Speed += balAcceleration;
-            float x = objbal.Position.X;
-            float y = objbal.Position.Y;
+            objball.Position = calculateNewballPos();
+            objball.Speed += ballAcceleration;
+            float x = objball.Position.X;
+            float y = objball.Position.Y;
             if (x > screenwidth)
             {
+                scoreRed++;
                 ResetGame();
             }
-
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (x < 0)
             {
-                Exit();
+                scoreBlue++;
+                ResetGame();
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            if (y >= screenheight || y <= 0 )
+            {
+                objball.Direction = - objball.Direction;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                Exit();
+                RedYValue = RedYValue - 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                RedYValue = RedYValue + 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                BlueYValue = BlueYValue - 5;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                BlueYValue = BlueYValue + 5;
             }
             // TEST
             // TODO: Add your update logic here
@@ -134,7 +156,9 @@ namespace Game9
         {
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
-            spriteBatch.Draw(bal, objbal.Position, Color.White);
+            spriteBatch.Draw(ball, objball.Position, Color.White);
+            spriteBatch.Draw(bluePlayer, new Rectangle(screenwidth-60,screenheight/2 + BlueYValue, 40,200), Color.White);
+            spriteBatch.Draw(redPlayer, new Rectangle(60, screenheight/2 + RedYValue, 40, 200), Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
