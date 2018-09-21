@@ -165,6 +165,11 @@ namespace Game9
                 objball.Direction = 180 -objball.Direction;
                // objball.Speed = 0;
             }
+            if (IsVectorInRectangle(new Vector2(calculateNewballPos().X, calculateNewballPos().Y), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
+            {
+                objball.Direction = 180 - objball.Direction;
+                // objball.Speed = 0;
+            }
 
             // TEST
             // TODO: Add your update logic here
