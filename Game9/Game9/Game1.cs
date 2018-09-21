@@ -16,12 +16,12 @@ namespace Game9
         SpriteBatch spriteBatch;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.01f; //extra speed gained per gametick.
-        const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
-            playerLength = 100, playerWidth = 40; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
+        const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
+            playerStartY = screenheight/2, playerLength = 100, playerWidth = 40; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
         Player objBluePlayer, objRedPlayer;
-        short RedYValue, BlueYValue, scoreBlue = 0, scoreRed = 0;
+        short scoreBlue = 0, scoreRed = 0;
 
 
         public Game1() 
@@ -33,8 +33,8 @@ namespace Game9
             graphics.PreferredBackBufferWidth = screenwidth;
 
             objball = new Ball(1, 0, ballBegin);
-            objBluePlayer = new Player(5, 5, 5);
-            objRedPlayer = new Player(5, 5, 5);
+            objBluePlayer = new Player(5, blueStartX, playerStartY);
+            objRedPlayer = new Player(5, redStartX, playerStartY);
 
             ResetGame();
         }
@@ -57,12 +57,14 @@ namespace Game9
             Random rnd = new Random();
             objball.Speed = 5;
             objball.Position = ballBegin;
-            objBluePlayer.X = blueStartX;
-            objRedPlayer.X = redStartX;
+            //objBluePlayer.X = blueStartX;
+            //objBluePlayer.Y = playerStartY;
+            //objRedPlayer.X = redStartX;
+            //objRedPlayer.Y = playerStartY;
             if (rnd.Next(1, 3) == 1)
-                objball.Direction = rnd.Next(-45, 45);
+                objball.Direction = rnd.Next(-75, 75);
             else
-                objball.Direction = rnd.Next(135, 225);
+                objball.Direction = rnd.Next(105, 255);
         }
 
         /// <summary>
