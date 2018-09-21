@@ -26,7 +26,7 @@ namespace Game9
 
         public Game1() 
         {
-            this.Window.Position = new Point(600, 0);
+            this.Window.Position = new Point(400, 100);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferHeight = screenheight;
@@ -89,6 +89,13 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
+        public bool IsVectorInRectangle(Vector2 a, Vector2 b, Vector2 c)
+        {
+            if ((a.X >= b.X && a.X <= c.X) && (a.Y <= b.Y && a.Y >= c.Y))
+                return true;
+            else return false;
+        }
+
         protected Vector2 calculateNewballPos()
         {
             Vector2 pos = objball.Position;
@@ -142,6 +149,12 @@ namespace Game9
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 if (objBluePlayer.Y + playerLength + objBluePlayer.Speed < screenheight)
                     objBluePlayer.Y += objBluePlayer.Speed;
+            if (IsVectorInRectangle(new Vector2(objball.Position.X + calculateNewballPos().X, objball.Position.Y + calculateNewballPos().Y), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength)))
+            {
+                objball.Direction = -objball.Direction;
+                objball.Speed = 0;
+            }
+
             // TEST
             // TODO: Add your update logic here
 
