@@ -11,21 +11,18 @@ namespace Game9
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D ball;
-        Texture2D redPlayer;
-        Texture2D bluePlayer;
+        Texture2D ball, redPlayer, bluePlayer;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
-        const double ballAcceleration = 0.01; //extra speed gained per gametick.
-        const int screenwidth = 1200;
-        const int screenheight = 800;
+        const float ballAcceleration = 0.01f; //extra speed gained per gametick.
+        const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
+            playerLength = 100, playerWidth = 40; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
+        //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
-        int RedYValue;
-        int BlueYValue;
-        int scoreBlue = 0;
-        int scoreRed = 0;
-        
+        Player objBluePlayer, objRedPlayer;
+        short RedYValue, BlueYValue, scoreBlue = 0, scoreRed = 0;
+
 
         public Game1() 
         {
@@ -34,7 +31,11 @@ namespace Game9
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferHeight = screenheight;
             graphics.PreferredBackBufferWidth = screenwidth;
+
             objball = new Ball(1, 0, ballBegin);
+            objBluePlayer = new Player(5, 5, 5);
+            objRedPlayer = new Player(5, 5, 5);
+
             ResetGame();
         }
 
@@ -56,6 +57,8 @@ namespace Game9
             Random rnd = new Random();
             objball.Speed = 5;
             objball.Position = ballBegin;
+            objBluePlayer.X = blueStartX;
+            objRedPlayer.X = redStartX;
             if (rnd.Next(1, 3) == 1)
                 objball.Direction = rnd.Next(-45, 45);
             else
@@ -73,8 +76,6 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
-            RedYValue = 60;
-            BlueYValue = 60;
             // TODO: use this.Content to load your game content here
         }
 
@@ -86,13 +87,13 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
-        private Vector2 calculateNewballPos()
+        protected Vector2 calculateNewballPos()
         {
             Vector2 pos = objball.Position;
             float x = pos.X;
             float y = pos.Y;
             double dir = objball.Direction * Math.PI/180;
-            double speed = objball.Speed;
+            float speed = objball.Speed;
             x = (float) (x + Math.Cos(dir) * speed);
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
@@ -118,30 +119,27 @@ namespace Game9
                 scoreBlue++;
                 ResetGame();
             }
-            if (y >= screenheight || y <= 0 )
-            {
+            if (y >= screenheight || y <= 0)
                 objball.Direction = - objball.Direction;
-            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
                 Exit();
-            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                RedYValue = RedYValue - 5;
-            }
+                if (objRedPlayer.Y - objRedPlayer.Speed > 0)
+                    objRedPlayer.Y -= objRedPlayer.Speed;
+            
             if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                RedYValue = RedYValue + 5;
-            }
+                if (objRedPlayer.Y + playerLength + objRedPlayer.Speed < screenheight)
+                    objRedPlayer.Y += objRedPlayer.Speed;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                BlueYValue = BlueYValue - 5;
-            }
+                if (objBluePlayer.Y - objBluePlayer.Speed > 0)
+                    objBluePlayer.Y -= objBluePlayer.Speed;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                BlueYValue = BlueYValue + 5;
-            }
+                if (objBluePlayer.Y + playerLength + objBluePlayer.Speed < screenheight)
+                    objBluePlayer.Y += objBluePlayer.Speed;
             // TEST
             // TODO: Add your update logic here
 
@@ -157,8 +155,8 @@ namespace Game9
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
             spriteBatch.Draw(ball, objball.Position, Color.White);
-            spriteBatch.Draw(bluePlayer, new Rectangle(screenwidth-60,screenheight/2 + BlueYValue, 40,200), Color.White);
-            spriteBatch.Draw(redPlayer, new Rectangle(60, screenheight/2 + RedYValue, 40, 200), Color.White);
+            spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
+            spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
