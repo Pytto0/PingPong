@@ -20,9 +20,10 @@ namespace Game9
             playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
+        Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
         Random rnd = new Random();
-        short scoreBlue = 0, scoreRed = 0;
+        int scoreBlue = 0, scoreRed = 0;
 
 
         public Game1() 
@@ -36,6 +37,7 @@ namespace Game9
             objball = new Ball(1, 0, ballBegin);
             objBluePlayer = new Player(5, blueStartX, playerStartY);
             objRedPlayer = new Player(5, redStartX, playerStartY);
+            objlives = new Vector2(0, 0);
 
             ResetGame();
         }
@@ -101,7 +103,7 @@ namespace Game9
         public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
         {
             Vector2 topRight1 = new Vector2(bottomRight1.X, topLeft1.Y);
-            Vector2 bottomLeft1 = new Vector2(topLeft1.X, bottomRight1.X);
+            Vector2 bottomLeft1 = new Vector2(topLeft1.X, bottomRight1.Y);
             if (IsVectorInRectangle(topLeft1, topLeft2, bottomRight2) || IsVectorInRectangle(bottomLeft1, topLeft2, bottomRight2) ||
                 IsVectorInRectangle(topRight1, topLeft2, bottomRight2) || IsVectorInRectangle(bottomRight1, topLeft2, bottomRight2))
                 return true;
@@ -170,7 +172,7 @@ namespace Game9
             if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
                 || IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
             {
-                objball.Direction = 180 -objball.Direction;
+                objball.Direction = 180 - objball.Direction;
                 // objball.Direction += rnd.Next(-10, 10); //zorgt er voor dat de bal iets willekeuriger terugkaatst.
             }
 
@@ -189,6 +191,45 @@ namespace Game9
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
             spriteBatch.Draw(ball, objball.Position, Color.White);
+
+            switch (scoreBlue)
+            {
+                case 0:
+                    spriteBatch.Draw(ball, objlives, Color.White);
+                    spriteBatch.Draw(ball, new Vector2(objlives.X + 15, objlives.Y), Color.White);
+                    spriteBatch.Draw(ball, new Vector2(objlives.X + 30, objlives.Y), Color.White);
+                    break;
+                case 1:
+                    spriteBatch.Draw(ball, objlives, Color.White);
+                    spriteBatch.Draw(ball, new Vector2(objlives.X + 15, objlives.Y), Color.White);
+                    break;
+                case 2:
+                    spriteBatch.Draw(ball, objlives, Color.White);
+                    break;
+                case 3:
+                    Exit();
+                    break;
+            }
+
+            switch (scoreRed)
+            {
+                case 0:
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 30, objlives.Y), Color.White);
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 45, objlives.Y), Color.White);
+                    break;
+                case 1:
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 30, objlives.Y), Color.White);
+                    break;
+                case 2:
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
+                    break;
+                case 3:
+                    Exit();
+                    break;
+            }
+
             spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
             spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
             spriteBatch.End();
