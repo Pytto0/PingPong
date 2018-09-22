@@ -23,7 +23,7 @@ namespace Game9
         Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
         Random rnd = new Random();
-        int scoreBlue = 0, scoreRed = 0;
+        short scoreBlue = 0, scoreRed = 0;
 
 
         public Game1() 
