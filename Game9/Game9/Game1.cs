@@ -17,10 +17,11 @@ namespace Game9
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.002f; //extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
-            playerStartY = screenheight/2, playerLength = 100, playerWidth = 40; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
+            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
         Player objBluePlayer, objRedPlayer;
+        Random rnd = new Random();
         short scoreBlue = 0, scoreRed = 0;
 
 
@@ -54,7 +55,6 @@ namespace Game9
         
         protected void ResetGame()
         {
-            Random rnd = new Random();
             objball.Speed = 5;
             objball.Position = ballBegin;
             //objBluePlayer.X = blueStartX;
@@ -89,17 +89,27 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
-        public bool IsVectorInRectangle(Vector2 a, Vector2 b, Vector2 c)
+        public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
         {
-            if ((a.X >= b.X && a.X <= c.X) && (a.Y >= b.Y && a.Y <= c.Y))
+            if ((vect.X >= topLeft.X && vect.X <= bottomRight.X) && (vect.Y >= topLeft.Y && vect.Y <= bottomRight.Y))
             {
                 return true;
             }
 
             else { return false; }
         }
+        public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
+        {
+            Vector2 topRight1 = new Vector2(bottomRight1.X, topLeft1.Y);
+            Vector2 bottomLeft1 = new Vector2(topLeft1.X, bottomRight1.X);
+            if (IsVectorInRectangle(topLeft1, topLeft2, bottomRight2) || IsVectorInRectangle(bottomLeft1, topLeft2, bottomRight2) ||
+                IsVectorInRectangle(topRight1, topLeft2, bottomRight2) || IsVectorInRectangle(bottomRight1, topLeft2, bottomRight2))
+                return true;
+            else
+                return false;
+        }
 
-        protected Vector2 calculateNewballPos()
+        protected Vector2 CalculateNewballPos()
         {
             Vector2 pos = objball.Position;
             float x = pos.X;
@@ -117,7 +127,7 @@ namespace Game9
          /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            objball.Position = calculateNewballPos();
+            objball.Position = CalculateNewballPos();
             objball.Speed += ballAcceleration;
             float x = objball.Position.X;
             float y = objball.Position.Y;
@@ -131,7 +141,7 @@ namespace Game9
                 scoreBlue++;
                 ResetGame();
             }
-            if (y >= screenheight || y <= 0)
+            if (y >= screenheight - ballLength || y <= 0)
                 objball.Direction = - objball.Direction;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -156,19 +166,12 @@ namespace Game9
                     objBluePlayer.Y += objBluePlayer.Speed;
                 }
             }
-           // System.Diagnostics.Debug.WriteLine("ballposx: " + calculateNewballPos().X);
-            //System.Diagnostics.Debug.WriteLine("ballposy: " + calculateNewballPos().Y);
-            //System.Diagnostics.Debug.WriteLine("blueplayerx: " + objBluePlayer.X);
-            //System.Diagnostics.Debug.WriteLine("blueplayery: " + objBluePlayer.Y);
-            if (IsVectorInRectangle(new Vector2(calculateNewballPos().X, calculateNewballPos().Y), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength)))
+
+            if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
+                || IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
             {
                 objball.Direction = 180 -objball.Direction;
-               // objball.Speed = 0;
-            }
-            if (IsVectorInRectangle(new Vector2(calculateNewballPos().X, calculateNewballPos().Y), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
-            {
-                objball.Direction = 180 - objball.Direction;
-                // objball.Speed = 0;
+                // objball.Direction += rnd.Next(-10, 10); //zorgt er voor dat de bal iets willekeuriger terugkaatst.
             }
 
             // TEST
