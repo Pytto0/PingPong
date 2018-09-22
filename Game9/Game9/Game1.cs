@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using System;
 
 namespace Game9
@@ -14,10 +15,12 @@ namespace Game9
         Texture2D ball, redPlayer, bluePlayer;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        // SoundEffect wall, miss, paddle; //G: Wat ging hier mis?
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.002f; //extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
-            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15; //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
+            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15;
+        //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
         Vector2 objlives;
@@ -63,6 +66,7 @@ namespace Game9
             //objBluePlayer.Y = playerStartY;
             //objRedPlayer.X = redStartX;
             //objRedPlayer.Y = playerStartY;
+            //G: Kunnen we deze vier dan gewoon weggooien?
             if (rnd.Next(1, 3) == 1)
                 objball.Direction = rnd.Next(-75, 75);
             else
@@ -80,6 +84,9 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
+            SoundEffect miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
+            SoundEffect paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
+            SoundEffect wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
             // TODO: use this.Content to load your game content here
         }
 
@@ -144,7 +151,11 @@ namespace Game9
                 ResetGame();
             }
             if (y >= screenheight - ballLength || y <= 0)
-                objball.Direction = - objball.Direction;
+            {
+                objball.Direction = -objball.Direction;
+                //wall.Play(); //G: Tot zo ver was het goed, maar het program zegt dat de SoundEffects [null] zijn.
+            }
+            // Up above is mentioned the code which calls the ball position.
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -168,12 +179,15 @@ namespace Game9
                     objBluePlayer.Y += objBluePlayer.Speed;
                 }
             }
+            // Up above is mentioned the reactions on the players' actions.
 
             if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
                 || IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
             {
                 objball.Direction = 180 - objball.Direction;
-                // objball.Direction += rnd.Next(-10, 10); //zorgt er voor dat de bal iets willekeuriger terugkaatst.
+                // objball.Direction += rnd.Next(-10, 10);
+                //F: Dit zorgt er voor dat de bal iets willekeuriger terugkaatst.
+                //G: Oh. Zullen we het dan meteen implementeren?
             }
 
             // TEST
