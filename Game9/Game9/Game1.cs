@@ -15,7 +15,7 @@ namespace Game9
         Texture2D ball, redPlayer, bluePlayer;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        // SoundEffect wall, miss, paddle; //G: Wat ging hier mis?
+        SoundEffect wall, miss, paddle;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.002f; //extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
@@ -84,9 +84,9 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
-            SoundEffect miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
-            SoundEffect paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
-            SoundEffect wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
+            miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
+            paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
+            wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
             // TODO: use this.Content to load your game content here
         }
 
@@ -143,17 +143,19 @@ namespace Game9
             if (x > screenwidth)
             {
                 scoreRed++;
+                miss.Play();
                 ResetGame();
             }
             if (x < 0)
             {
                 scoreBlue++;
+                miss.Play();
                 ResetGame();
             }
             if (y >= screenheight - ballLength || y <= 0)
             {
                 objball.Direction = -objball.Direction;
-                //wall.Play(); //G: Tot zo ver was het goed, maar het program zegt dat de SoundEffects [null] zijn.
+                wall.Play();
             }
             // Up above is mentioned the code which calls the ball position.
 
@@ -185,6 +187,7 @@ namespace Game9
                 || IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
             {
                 objball.Direction = 180 - objball.Direction;
+                paddle.Play();
                 // objball.Direction += rnd.Next(-10, 10);
                 //F: Dit zorgt er voor dat de bal iets willekeuriger terugkaatst.
                 //G: Oh. Zullen we het dan meteen implementeren?
