@@ -26,8 +26,9 @@ namespace Game9
         Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
         SpriteFont font;
-        short scoreBlue = 0, scoreRed = 0;
+        short redLives = 3, blueLives = 3;
 
+        bool SpaceReady = false;
 
         public Game1() 
         {
@@ -37,12 +38,10 @@ namespace Game9
             graphics.PreferredBackBufferHeight = screenheight;
             graphics.PreferredBackBufferWidth = screenwidth;
 
-            objball = new Ball(1, 0, ballBegin);
+            objball = new Ball(0, 0, ballBegin);
             objBluePlayer = new Player(10, blueStartX, playerStartY);
             objRedPlayer = new Player(10, redStartX, playerStartY);
             objlives = new Vector2(0, 0);
-
-            ResetGame();
         }
 
         /// <summary>
@@ -131,7 +130,7 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
-        /// <summary>
+         /// <summary>
          /// Allows the game to run logic such as updating the world,
          /// checking for collisions, gathering input, and playing audio.
          /// </summary>
@@ -142,15 +141,17 @@ namespace Game9
             objball.Speed += ballAcceleration;
             float x = objball.Position.X;
             float y = objball.Position.Y;
-            if (x > blueStartX)
+            //if (x > screenwidth)
+            if (x + ballWidth > blueStartX)
             {
-                scoreRed++;
+                blueLives--;
                 miss.Play();
                 ResetGame();
             }
-            if (x < redStartX)
+            //if (x < 0)
+            if (x < redStartX + playerWidth)
             {
-                scoreBlue++;
+                redLives--;
                 miss.Play();
                 ResetGame();
             }
@@ -195,8 +196,16 @@ namespace Game9
                 //G: Oh. Zullen we het dan meteen implementeren?
             }
 
-            // TEST
-            // TODO: Add your update logic here
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && SpaceReady == false)
+            {
+                SpaceReady = true;
+                ResetGame();
+            }
+
+            if (blueLives <= 0 || redLives <= 0)
+            {
+                Exit();
+            }
 
             base.Update(gameTime);
         }
@@ -207,14 +216,15 @@ namespace Game9
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         /// 
 
-        public void drawLives(short lives, bool isRed)
+        public void DrawLives(short lives, bool isRed)
         {
-            for (int i = 0; i < lives; i++) {
-                if (isRed) //we are drawing red's lives (lives should be in topleft corner)
+            for (int i = 0; i < lives; i++)
+            {
+                if (isRed) //we are drawing red's lives (their lives should be in topleft corner)
                 {
                     spriteBatch.Draw(ball, new Vector2(i * 16, 0), Color.White);
                 }
-                else //we are drawing blue's lives (lives should be in topleft corner)
+                else //we are drawing blue's lives (their lives should be in topright corner)
                 {
                     spriteBatch.Draw(ball, new Vector2(screenwidth - 16 - i * 16, 0), Color.White);
                 }
@@ -225,42 +235,15 @@ namespace Game9
         {
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
-            spriteBatch.Draw(ball, objball.Position, Color.White);
-
-            switch (scoreBlue)
+            spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth/2, screenheight/2), Color.Black);
+            if (SpaceReady)
             {
-                case 0:
-                    drawLives(3, true);
-                    break;
-                case 1:
-                    drawLives(2, true);
-                    break;
-                case 2:
-                    drawLives(1, true);
-                    break;
-                case 3:
-                    Exit();
-                    break;
+                spriteBatch.Draw(ball, objball.Position, Color.White);
+                DrawLives(redLives, true);
+                DrawLives(blueLives, false);
+                spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
+                spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
             }
-
-            switch (scoreRed)
-            {
-                case 0:
-                    drawLives(3, false);
-                    break;
-                case 1:
-                    drawLives(2, false);
-                    break;
-                case 2:
-                    drawLives(1, false);
-                    break;
-                case 3:
-                    Exit();
-                    break;
-            }
-
-            spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
-            spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
