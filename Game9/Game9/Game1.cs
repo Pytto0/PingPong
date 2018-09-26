@@ -12,7 +12,7 @@ namespace Game9
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D ball, redPlayer, bluePlayer;
+        Texture2D ball, redPlayer, bluePlayer, PU_speed, PU_plus;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
@@ -23,8 +23,8 @@ namespace Game9
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
-        Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
+        PowerUP objpowup;
         SpriteFont font;
         short redLives = 3, blueLives = 3;
 
@@ -41,7 +41,7 @@ namespace Game9
             objball = new Ball(0, 0, ballBegin);
             objBluePlayer = new Player(10, blueStartX, playerStartY);
             objRedPlayer = new Player(10, redStartX, playerStartY);
-            objlives = new Vector2(0, 0);
+            objpowup = new PowerUP(0, 0, "Extra ball");
         }
 
         /// <summary>
@@ -84,6 +84,8 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
+            PU_plus = Content.Load<Texture2D>("Graphics/powerup_ballplus");
+            PU_speed = Content.Load<Texture2D>("Graphics/powerup_ballspeed");
             miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
             paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
             wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
@@ -130,6 +132,14 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
+
+        public void Odds()
+        {
+            Random rnd = new Random();
+
+        }
+
+
          /// <summary>
          /// Allows the game to run logic such as updating the world,
          /// checking for collisions, gathering input, and playing audio.
