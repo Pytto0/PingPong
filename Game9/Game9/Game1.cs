@@ -25,6 +25,7 @@ namespace Game9
         Ball objball;
         Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
+        SpriteFont font;
         short scoreBlue = 0, scoreRed = 0;
 
 
@@ -87,6 +88,7 @@ namespace Game9
             miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
             paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
             wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
+            font = Content.Load<SpriteFont>("Font");
             // TODO: use this.Content to load your game content here
         }
 
@@ -203,6 +205,22 @@ namespace Game9
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        /// 
+
+        public void drawLives(short lives, bool isRed)
+        {
+            for (int i = 0; i < lives; i++) {
+                if (isRed) //we are drawing red's lives (lives should be in topleft corner)
+                {
+                    spriteBatch.Draw(ball, new Vector2(i * 16, 0), Color.White);
+                }
+                else //we are drawing blue's lives (lives should be in topleft corner)
+                {
+                    spriteBatch.Draw(ball, new Vector2(screenwidth - 16 - i * 16, 0), Color.White);
+                }
+            }
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
@@ -212,16 +230,13 @@ namespace Game9
             switch (scoreBlue)
             {
                 case 0:
-                    spriteBatch.Draw(ball, objlives, Color.White);
-                    spriteBatch.Draw(ball, new Vector2(objlives.X + 15, objlives.Y), Color.White);
-                    spriteBatch.Draw(ball, new Vector2(objlives.X + 30, objlives.Y), Color.White);
+                    drawLives(3, true);
                     break;
                 case 1:
-                    spriteBatch.Draw(ball, objlives, Color.White);
-                    spriteBatch.Draw(ball, new Vector2(objlives.X + 15, objlives.Y), Color.White);
+                    drawLives(2, true);
                     break;
                 case 2:
-                    spriteBatch.Draw(ball, objlives, Color.White);
+                    drawLives(1, true);
                     break;
                 case 3:
                     Exit();
@@ -231,16 +246,13 @@ namespace Game9
             switch (scoreRed)
             {
                 case 0:
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 30, objlives.Y), Color.White);
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 45, objlives.Y), Color.White);
+                    drawLives(3, false);
                     break;
                 case 1:
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 30, objlives.Y), Color.White);
+                    drawLives(2, false);
                     break;
                 case 2:
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 15, objlives.Y), Color.White);
+                    drawLives(1, false);
                     break;
                 case 3:
                     Exit();
