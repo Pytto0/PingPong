@@ -17,7 +17,7 @@ namespace Game9
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
-        const float ballAcceleration = 0.002f; //extra speed gained per gametick.
+        const float ballAcceleration = 0.005f; //extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
             playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15;
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
@@ -25,7 +25,6 @@ namespace Game9
         Ball objball;
         Vector2 objlives;
         Player objBluePlayer, objRedPlayer;
-        Random rnd = new Random();
         short scoreBlue = 0, scoreRed = 0;
 
 
@@ -38,8 +37,8 @@ namespace Game9
             graphics.PreferredBackBufferWidth = screenwidth;
 
             objball = new Ball(1, 0, ballBegin);
-            objBluePlayer = new Player(5, blueStartX, playerStartY);
-            objRedPlayer = new Player(5, redStartX, playerStartY);
+            objBluePlayer = new Player(10, blueStartX, playerStartY);
+            objRedPlayer = new Player(10, redStartX, playerStartY);
             objlives = new Vector2(0, 0);
 
             ResetGame();
@@ -60,7 +59,8 @@ namespace Game9
         
         protected void ResetGame()
         {
-            objball.Speed = 5;
+            Random rnd = new Random();
+            objball.Speed = 7;
             objball.Position = ballBegin;
             //objBluePlayer.X = blueStartX;
             //objBluePlayer.Y = playerStartY;
@@ -140,13 +140,13 @@ namespace Game9
             objball.Speed += ballAcceleration;
             float x = objball.Position.X;
             float y = objball.Position.Y;
-            if (x > screenwidth)
+            if (x > blueStartX)
             {
                 scoreRed++;
                 miss.Play();
                 ResetGame();
             }
-            if (x < 0)
+            if (x < redStartX)
             {
                 scoreBlue++;
                 miss.Play();

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/rodeSpeler.png</SourceFile>
-  <SourceTime>2018-09-14T16:43:07.9660879+02:00</SourceTime>
-  <DestFile>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/bin/Windows/Graphics/rodeSpeler.xnb</DestFile>
-  <DestTime>2018-09-22T20:16:52.4611343+02:00</DestTime>
+  <SourceFile>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/rodeSpeler.png</SourceFile>
+  <SourceTime>2018-09-14T16:42:30.254453+02:00</SourceTime>
+  <DestFile>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/bin/Windows/Graphics/rodeSpeler.xnb</DestFile>
+  <DestTime>2018-09-23T20:40:06.2287233+02:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T16:05:36+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
