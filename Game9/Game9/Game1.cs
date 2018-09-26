@@ -19,7 +19,7 @@ namespace Game9
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.005f; //extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
-            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15;
+            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15, pwpLength = 32, pwpWidth = 32;
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
@@ -27,7 +27,7 @@ namespace Game9
         SpriteFont font;
         short redLives = 3, blueLives = 3;
         float powerUpTime = 15f;
-
+        PowerUp pwp;
         bool SpaceReady = false;
 
         public Game1() 
@@ -61,11 +61,6 @@ namespace Game9
             Random rnd = new Random();
             objball.Speed = 7;
             objball.Position = ballBegin;
-            //objBluePlayer.X = blueStartX;
-            //objBluePlayer.Y = playerStartY;
-            //objRedPlayer.X = redStartX;
-            //objRedPlayer.Y = playerStartY;
-            //G: Kunnen we deze vier dan gewoon weggooien?
             if (rnd.Next(1, 3) == 1)
                 objball.Direction = rnd.Next(-75, 75);
             else
@@ -133,13 +128,7 @@ namespace Game9
             return new Vector2(x, y);
         }
 
-        public void Odds()
-        {
-            Random rnd = new Random();
-
-        }
-
-        public void createNewPowerup()
+        public void CreateNewPowerUp()
         {
             Random rnd = new Random();
             short choice = (short)Math.Round((rnd.NextDouble() * 3) - 0.501) ;
@@ -157,7 +146,7 @@ namespace Game9
                     powerUpSprite = PU_Heart;
                     break;
             }
-            PowerUp pwp = new PowerUp(x, y, powerUpSprite);
+            pwp = new PowerUp(x, y, powerUpSprite);
             
 
         }
@@ -242,10 +231,14 @@ namespace Game9
             powerUpTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if(powerUpTime <= 0)
             {
-                createNewPowerup();
+                CreateNewPowerUp();
                 powerUpTime = 15;
             }
 
+            if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
+            {
+                pwp = null;
+            }
 
             base.Update(gameTime);
         }
@@ -275,15 +268,16 @@ namespace Game9
         {
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth/2, screenheight/2), Color.Black);
-            if (SpaceReady)
+            if (!SpaceReady)
+            { spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black); }
+            else
             {
                 spriteBatch.Draw(ball, objball.Position, Color.White);
                 DrawLives(redLives, true);
                 DrawLives(blueLives, false);
                 spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
-                
+
             }
             spriteBatch.End();
 

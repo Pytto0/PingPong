@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Ball.cs" />
     <Compile Include="Class2.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="DataSet1.Designer.cs">
@@ -49,6 +50,8 @@
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
     <Compile Include="Game1.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="PowerUP.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
