@@ -12,7 +12,7 @@ namespace Game9
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D ball, redPlayer, bluePlayer, PU_speed, PU_plus;
+        Texture2D ball, redPlayer, bluePlayer, powerUpSprite, PU_Plus, PU_Speed, PU_Heart;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
@@ -24,9 +24,9 @@ namespace Game9
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball objball;
         Player objBluePlayer, objRedPlayer;
-        PowerUP objpowup;
         SpriteFont font;
         short redLives = 3, blueLives = 3;
+        float powerUpTime = 15f;
 
         bool SpaceReady = false;
 
@@ -41,7 +41,6 @@ namespace Game9
             objball = new Ball(0, 0, ballBegin);
             objBluePlayer = new Player(10, blueStartX, playerStartY);
             objRedPlayer = new Player(10, redStartX, playerStartY);
-            objpowup = new PowerUP(0, 0, "Extra ball");
         }
 
         /// <summary>
@@ -84,8 +83,9 @@ namespace Game9
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
-            PU_plus = Content.Load<Texture2D>("Graphics/powerup_ballplus");
-            PU_speed = Content.Load<Texture2D>("Graphics/powerup_ballspeed");
+            PU_Plus = Content.Load<Texture2D>("Graphics/powerup_ballplus");
+            PU_Speed = Content.Load<Texture2D>("Graphics/powerup_ballspeed");
+            PU_Heart = Content.Load<Texture2D>("Graphics/powerup_heart");
             miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
             paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
             wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
@@ -136,6 +136,29 @@ namespace Game9
         public void Odds()
         {
             Random rnd = new Random();
+
+        }
+
+        public void createNewPowerup()
+        {
+            Random rnd = new Random();
+            short choice = (short)Math.Round((rnd.NextDouble() * 3) - 0.501) ;
+            short x =  (short) (Math.Round(rnd.NextDouble() - blueStartX) * screenwidth + redStartX);
+            short y = (short) Math.Round(rnd.NextDouble()  * screenheight);
+            switch (choice)
+            {
+                case 0:
+                    powerUpSprite = PU_Plus;
+                    break;
+                case 1:
+                    powerUpSprite = PU_Speed;
+                    break;
+                case 2:
+                    powerUpSprite = PU_Heart;
+                    break;
+            }
+            PowerUp pwp = new PowerUp(x, y, powerUpSprite);
+            
 
         }
 
@@ -216,6 +239,13 @@ namespace Game9
             {
                 Exit();
             }
+            powerUpTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if(powerUpTime <= 0)
+            {
+                createNewPowerup();
+                powerUpTime = 15;
+            }
+
 
             base.Update(gameTime);
         }
@@ -253,6 +283,7 @@ namespace Game9
                 DrawLives(blueLives, false);
                 spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
+                
             }
             spriteBatch.End();
 
