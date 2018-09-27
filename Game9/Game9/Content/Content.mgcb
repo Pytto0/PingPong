@@ -56,7 +56,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Font.spritefont
 
-#begin Graphics/powerup-bal.png
+#begin Graphics/powerup_ballplus.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -66,9 +66,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Graphics/powerup-bal.png
+/build:Graphics/powerup_ballplus.png
 
-#begin Graphics/powerup-balspeed.png
+#begin Graphics/powerup_ballspeed.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -78,5 +78,17 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Graphics/powerup-balspeed.png
+/build:Graphics/powerup_ballspeed.png
+
+#begin Graphics/powerup_heart.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Graphics/powerup_heart.png
 
