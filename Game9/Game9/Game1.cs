@@ -34,7 +34,7 @@ namespace Game9
         short redLives = 5, blueLives = 5, amountOfBalls = 0;
         float powerUpTime;
         PowerUp pwp;
-        bool SpaceReady = false;
+        bool SpaceReady = false, eindeSpel = false;
         Rectangle ballRect, ballNextRect, bluePlayerRect, redPlayerRect, pwpRect;
 
 
@@ -114,6 +114,15 @@ namespace Game9
             else
                 return false;
         } */
+
+        //De volgende methode is bedoeld om de positie van de bal te veranderen.
+        public Vector2 BallPositionChange(int id, int x, int y)
+        {
+            Vector2 pos = objball[id].Position;
+            pos.X += x;
+            pos.Y += y;
+            return (new Vector2(pos.X, pos.Y));
+        }
 
         //De volgende methode is bedoeld om te controleren waar de linkerbovenhoek positie van de bal is.
         public Vector2 CalculateNewballPos(int ballId)
@@ -277,9 +286,12 @@ namespace Game9
                 ResetGame();
             }
 
-            //De volgende verklaring geeft aan hoe het spel zal eindigen..
+            //De volgende verklaring geeft aan hoe het spel zal eindigen.
             if (blueLives <= 0 || redLives <= 0)
-            { Exit(); }
+            {
+                eindeSpel = true;
+                Exit();
+            }
 
             //De volgende verklaringen bepalen hoe vaak de power-ups verschijnen.
             powerUpTime -=  (float)gameTime.ElapsedGameTime.TotalSeconds;
