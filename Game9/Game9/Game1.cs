@@ -14,14 +14,14 @@ namespace Game9
     /// </summary>
     public class Game1 : Game
     {
-        Texture2D ball, redPlayer, bluePlayer, powerUpSprite, PU_Plus, PU_Speed, PU_Heart;
+        Texture2D ball, redPlayer, bluePlayerSprite, powerUpSprite, PU_Plus, PU_Speed, PU_Heart;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.002f, pwpTime = 15f;//extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
-            playerStartY = screenheight / 2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15, pwpLength = 32, pwpWidth = 32;
+            playerStartY = screenheight / 2, playerLength = 95, playerWidth = 15, ballHeight = 15, ballWidth = 15, pwpHeight = 32, pwpWidth = 32;
 
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
@@ -32,6 +32,7 @@ namespace Game9
         float powerUpTime;
         PowerUp pwp;
         bool SpaceReady = false;
+        Rectangle ballRect, bluePlayerRect, redPlayerRect, pwpRect;
 
 
         public Game1() 
@@ -84,7 +85,7 @@ namespace Game9
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ball = Content.Load<Texture2D>("Graphics/bal");
-            bluePlayer = Content.Load<Texture2D>("Graphics/blauweSpeler");
+            bluePlayerSprite = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
             PU_Plus = Content.Load<Texture2D>("Graphics/powerup_ballplus");
             PU_Speed = Content.Load<Texture2D>("Graphics/powerup_ballspeed");
@@ -142,9 +143,7 @@ namespace Game9
             Random rnd = new Random();
             short choice = (short)rnd.Next(2);
             short x =  (short) (rnd.NextDouble() * (blueStartX - (screenwidth/4 + redStartX))+ redStartX + screenwidth/4);
-            //Debug.WriteLine(screenwidth - redStartX);
-            short y = (short) Math.Round(rnd.NextDouble()  * screenheight);
-            //Debug.WriteLine("x2: " + x + " y2: " + y);
+            short y = (short) Math.Round(rnd.NextDouble()  * (screenheight - pwpHeight));
             switch (choice)
             {
                 case 0:
@@ -162,6 +161,64 @@ namespace Game9
 
         }
 
+        public void ExecuteBallPhysics(short id, GameTime gameTime)
+        {
+            ballRect = new Rectangle((int) objball[id].Position.X, (int) objball[id].Position.Y, (int) (objball[id].Position.X + ballWidth), (int) (objball[id].Position.Y + ballHeight));
+            bluePlayerRect = new Rectangle((int) objBluePlayer.X, );
+            objball[id].Position = CalculateNewballPos(id);
+            objball[id].Speed += ballAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float x = objball[id].Position.X;
+            float y = objball[id].Position.Y;
+            if (y >= screenheight - ballHeight || y <= 0)
+            {
+                objball[id].Direction = -objball[id].Direction;
+                wall.Play();
+            }
+            if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
+            || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
+            {
+                Random rnd = new Random();
+                objball[id].Direction = 180 - objball[id].Direction;
+                paddle.Play();
+                objball[id].Direction += rnd.Next(-10, 10);
+            }
+            if (pwp != null)
+            {
+                if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
+                {
+
+                    if (pwp.Sprite == PU_Heart)
+                    {
+                        if (redLives < 5)
+                            redLives++;
+                        if (blueLives < 5)
+                            blueLives++;
+                    }
+                    else if (pwp.Sprite == PU_Speed)
+                        objball[id].Speed += 2;
+                    else if (pwp.Sprite == PU_Plus && amountOfBalls < 5)
+                    {
+                        objball[amountOfBalls] = new Ball((int)(-0.5 * objball[id].Direction), objball[id].Speed - 2, objball[id].Position);
+                        amountOfBalls += 1;
+                    }
+                    pwp = null;
+                }
+            }
+            if (x + ballWidth > blueStartX)
+            {
+                blueLives--;
+                miss.Play();
+                ResetGame();
+            }
+            if (x < redStartX + playerWidth)
+            {
+                redLives--;
+                miss.Play();
+                ResetGame();
+            }
+        
+    }
+
 
          /// <summary>
          /// Allows the game to run logic such as updating the world,
@@ -170,86 +227,17 @@ namespace Game9
          /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            for (int i = 0; i < objball.Length; i++)
+            for (short i = 0; i < objball.Length; i++)
             {
                 if (objball[i] != null)
                 {
-                    //Debug.WriteLine("ID: " + i + " X: " + objball[i].Position.X + " Y: " + objball[i].Position.Y);
-                    //Debug.Write("Speed: " + objball[i].Speed + " x: " + objball[i].Position.X + " y: " + objball[i].Position.Y); 
-                    objball[i].Position = CalculateNewballPos(i);
-                    objball[i].Speed += ballAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    float x = objball[i].Position.X;
-                    float y = objball[i].Position.Y;
-                    Random a = new Random();
-                    double b = a.NextDouble();
-                    /*if(b < 0.01)
-                    {
-                        if (amountOfBalls < 2)
-                        {
-                            Debug.WriteLine("B: " + b + "amountOfBalls: " + amountOfBalls);
-                            objball[amountOfBalls] = new Ball((int)(-0.5 * objball[i].Direction), objball[i].Speed - 2, objball[i].Position);
-                            amountOfBalls += 1;
-                            b += 0.1;
-
-                        }
-                    }  */
-                    if (y >= screenheight - ballLength || y <= 0)
-                    {
-                        objball[i].Direction = -objball[i].Direction;
-                        wall.Play();
-                    }
-                    if (IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
-                    || IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
-                    {
-                        Random rnd = new Random();
-                        objball[i].Direction = 180 - objball[i].Direction;
-                        paddle.Play();
-                        objball[i].Direction += rnd.Next(-10, 10);
-                        //F: Dit zorgt er voor dat de bal iets willekeuriger terugkaatst.
-                        //G: Oh. Zullen we het dan meteen implementeren?
-                    }
-                    if (pwp != null)
-                    {
-                        if (IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
-                        {
-
-                            if (pwp.Sprite == PU_Heart)
-                            {
-                                if (redLives < 5)
-                                    redLives++;
-                                if (blueLives < 5)
-                                    blueLives++;
-                            }
-                            else if (pwp.Sprite == PU_Speed)
-                            {
-                                objball[i].Speed += 2;
-                            }
-                            else if (pwp.Sprite == PU_Plus && amountOfBalls < 5)
-                            {
-                                objball[amountOfBalls] = new Ball((int)(-0.5 * objball[i].Direction), objball[i].Speed - 2, objball[i].Position);
-                                amountOfBalls += 1;
-                            }
-                            pwp = null;
-                        }
-                    }
-                    if (x + ballWidth > blueStartX)
-                    {
-                        blueLives--;
-                        miss.Play();
-                        ResetGame();
-                    }
-                    if (x < redStartX + playerWidth)
-                    {
-                        redLives--;
-                        miss.Play();
-                        ResetGame();
-                    }
+                    ExecuteBallPhysics(i, gameTime);
                 }
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-                //objball[amountOfBalls] = new Ball(-objball[0].Direction, objball[0].Speed - 2, objball[0].Position);
+           
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
                 if (objRedPlayer.Y - objRedPlayer.Speed > 0)
@@ -332,7 +320,7 @@ namespace Game9
                 }
                 DrawLives(redLives, true);
                 DrawLives(blueLives, false);
-                spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
+                spriteBatch.Draw(bluePlayerSprite, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
                 if (pwp != null)
                 {
