@@ -26,7 +26,7 @@ namespace Game9
         Player objBluePlayer, objRedPlayer;
         SpriteFont font;
         short redLives = 3, blueLives = 3;
-        float powerUpTime = 15f;
+        float powerUpTime = 3f;
         PowerUp pwp;
         bool SpaceReady = false;
 
@@ -127,7 +127,7 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
-
+        
         public void CreateNewPowerUp()
         {
             Random rnd = new Random();
@@ -159,6 +159,7 @@ namespace Game9
          /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+
             objball.Position = CalculateNewballPos();
             objball.Speed += ballAcceleration;
             float x = objball.Position.X;
@@ -228,16 +229,19 @@ namespace Game9
             {
                 Exit();
             }
-            powerUpTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            powerUpTime -= 0.005f;
             if(powerUpTime <= 0)
             {
+                objball.Position = new Vector2(objball.Position.X + 100, objball.Position.Y); 
                 CreateNewPowerUp();
-                powerUpTime = 15;
+                powerUpTime = 3f;
             }
-
-            if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
+            if (pwp != null)
             {
-                pwp = null;
+                if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
+                {
+                    pwp = null;
+                }
             }
 
             base.Update(gameTime);
@@ -277,6 +281,10 @@ namespace Game9
                 DrawLives(blueLives, false);
                 spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
+                if (pwp != null)
+                {
+                    spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White);
+                }
 
             }
             spriteBatch.End();

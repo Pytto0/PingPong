@@ -57,3 +57,9 @@ C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\obj\x86\Debug\Game9.pdb
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Font.xnb
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup-bal.xnb
 C:\Users\flori\OneDrive\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup-balspeed.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup_bal.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup_ballplus.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup_ballspeed.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup_balspeed.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Graphics\powerup_heart.xnb
+C:\Users\Zone Q11\Documents\GitHub\PingPong\Game9\Game9\bin\Windows\x86\Debug\Content\Font.xnb
