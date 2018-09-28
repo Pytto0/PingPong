@@ -26,8 +26,8 @@ namespace Game9
         const short blueScoreLine = blueStartX + 2, redScoreLine = redStartX - 2,
             redFrontLine = redStartX + playerWidth, blueFrontLine = blueStartX;
 
-        //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
-        //playerHeight: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
+        //blueStartX: De x-coordinaat waar de blauwe speler start. redStartX: De x-coordinaat waar de rode speler start.
+        //playerHeight: De lengte van de rechthoek waar de spelers mee spelen. playerWidth: De breedte van de rechthoek waar de spelers mee spelen
         Ball[] objball = new Ball[5];
         Player objBluePlayer, objRedPlayer;
         SpriteFont font;
@@ -44,8 +44,8 @@ namespace Game9
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             objball[0] = new Ball(0, 0, ballBegin);
-            //ball[0] bestaat altijd. Deze kunnen we als referentiepunt gebruiken om bijvoorbeeld
-            //te kijken wat de breedte is van een bal (ze hebben immers allemaal dezelfde sprite).
+            /*ball[0] bestaat altijd. Deze kunnen we als referentiepunt gebruiken om bijvoorbeeld
+            te kijken wat de breedte is van een bal. Ze hebben immers allemaal dezelfde sprite.*/
             graphics.PreferredBackBufferHeight = screenheight;
             graphics.PreferredBackBufferWidth = screenwidth;
             objBluePlayer = new Player(10, blueStartX, playerStartY);
@@ -56,8 +56,8 @@ namespace Game9
             base.Initialize();
         }
 
-        //The following method resets the position of the ball, as well as removing extra balls.
-        //We remove them with the Array.Clear function.
+        //De volgende methode zet de positie van de bal terug, en verwijdert ook de extra ballen.
+        //We verwijderen ze met de Array.Clear functie.
         protected void ResetGame()
         {
             Array.Clear(objball, 0, objball.Length);
@@ -91,9 +91,8 @@ namespace Game9
         }
 
         protected override void UnloadContent()
-        {
-        }
-        //The following method is meant to regularly check where the position of the ball is, based on its corners.
+        {}
+        //De volgende methode is bedoeld om te controleren waar de positie van de bal is, op basis van de hoeken ervan.
         /*public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
         {
             if ((vect.X >= topLeft.X && vect.X <= bottomRight.X) && (vect.Y >= topLeft.Y && vect.Y <= bottomRight.Y))
@@ -103,7 +102,8 @@ namespace Game9
 
             return false;
         } */
-        //The following method is meant to regularly check whether the ball has touched the Players or not.
+
+        //De volgende methode is bedoeld om te controleren of de bal de spelers heeft geraakt of niet.
         /*public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
         {
             Vector2 topRight1 = new Vector2(bottomRight1.X, topLeft1.Y);
@@ -114,7 +114,8 @@ namespace Game9
             else
                 return false;
         } */
-        //The following method is meant to regularly check where the position of the top-left corner of the ball is.
+
+        //De volgende methode is bedoeld om te controleren waar de linkerbovenhoek positie van de bal is.
         public Vector2 CalculateNewballPos(int ballId)
         { 
             Vector2 pos = objball[ballId].Position;
@@ -126,9 +127,9 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
-        //Kaatst de bal terug, met een kleine verandering in hoek om een beetje willekeurigheid toe te voegen.
-        //De boolean horizontalbounce wordt gebruikt om te kijken of de bal tegen de onder/bovenkant van het scherm
-        //aan botst of tegen een balk van een speler aan.
+        //De volgende methode kaatst de bal terug, met een kleine verandering in hoek om een beetje willekeurigheid toe te voegen.
+        /*De bool horizontalbounce wordt gebruikt om te kijken of de bal tegen de onder/bovenkant
+        van het scherm aan botst of tegen een balk van een speler aan.*/
         public void Bounce(int ballId, bool horizontalBounce)
         {
             Random rnd = new Random();
@@ -140,7 +141,7 @@ namespace Game9
             objball[ballId].Direction += rnd.Next(-10, 10);
         }
 
-        //The following method decides by random which power up is going to be called/spawned.
+        //De volgende methode bepaalt door welke power-up wordt geroept/gespawnt.
         public void CreateNewPowerUp()
         {
             pwp = null;
@@ -167,7 +168,7 @@ namespace Game9
         {
             ballRect = new Rectangle((int) objball[id].Position.X, (int) objball[id].Position.Y, ballWidth, ballHeight);
             ballNextRect = new Rectangle((int) (CalculateNewballPos(id).X), (int) (CalculateNewballPos(id).Y), ballWidth, ballHeight);
-            //ballRect is de vierhoek waar de bal zich nu in bevind. ballNextRect is de vierhoek waar de bal zich de volgende frame in zal bevinden.
+            //ballRect is de vierhoek waar de bal zich nu in bevindt. ballNextRect is de vierhoek waar de bal zich de volgende frame in zal bevinden.
 
             bluePlayerRect = new Rectangle(objBluePlayer.X, objBluePlayer.Y, playerWidth, playerHeight);
             redPlayerRect = new Rectangle(objRedPlayer.X, objRedPlayer.Y, playerWidth, playerHeight);
@@ -177,15 +178,15 @@ namespace Game9
             float x = objball[id].Position.X;
             float y = objball[id].Position.Y;
 
-            //The following statement makes the ball bounce the walls by means of fully inverting its direction.
+            //Deze verklaring zorgt ervoor dat de bal tegen de muren stuitert door de richting volledig om te keren.
             if (y >= screenheight - ballHeight || y <= 0)
             {
                 Bounce(id, false);
                 wall.Play();
             }
-            //The following statement makes the ball bounce upon hitting the paddle.
-            //if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerHeight))
-            //|| IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerHeight)))
+            //De volgende verklaring maakt de bal stuiterend als het balken raakt.
+            /*if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerHeight))
+            || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerHeight)))*/
             if (ballNextRect.Intersects(bluePlayerRect))
             {
                 objball[id].Position = new Vector2(objball[id].Position.X - 10, objball[id].Position.Y);
@@ -198,14 +199,14 @@ namespace Game9
                 Bounce(id, true);
                 paddle.Play();
             }
-            //The following statement regularly checks whether the ball hits a powerUp or not.
+
+            //De volgende verklaring checkt regelmatig of de bal een power up raakt of niet.
             if (pwp != null)
             {
                 pwpRect = new Rectangle(pwp.X, pwp.Y, pwp.Sprite.Width, pwp.Sprite.Height);
                 if (ballNextRect.Intersects(pwpRect))
                     //IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
                 {
-
                     if (pwp.Sprite == PU_Heart)
                     {
                         if (redLives < 5)
@@ -223,8 +224,8 @@ namespace Game9
                     pwp = null;
                 }
             }
-            //The following statements declare when a player has scored.
-            //If the ball passes through a certain x-value, their opponent's life will decrease by one.
+            //De volgende verklaringen verklaren wanneer een speler heeft gescoord.
+            //Als de bal een bepaalde x-waarde passeert, neemt de leven van zijn tegenstander met één af.
             if (x  > blueScoreLine)
             {
                 blueLives--;
@@ -241,20 +242,18 @@ namespace Game9
 
         protected override void Update(GameTime gameTime)
         {
-            //Loops through all the objects of the ball we have, applying all their movement changes.
+            //Loops voor alle bal objecten die we hebben, en hun bewegingen toepassen.
             for (short i = 0; i < objball.Length; i++)
             {
                 if (objball[i] != null)
-                {
-                    ExecuteBallPhysics(i, gameTime);
-                }
+                { ExecuteBallPhysics(i, gameTime); }
             }
 
-            //The escape button terminates the program run.
+            //De escape knop beëindigt het program.
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-            //The following statements mention the reactions on the players' actions.
+            //De volgende verklaringen reageren op de acties van de spelers.
             if (Keyboard.GetState().IsKeyDown(Keys.W))
                 if (objRedPlayer.Y - objRedPlayer.Speed > 0)
                     objRedPlayer.Y -= objRedPlayer.Speed;
@@ -271,18 +270,18 @@ namespace Game9
                 if (objBluePlayer.Y + playerHeight + objBluePlayer.Speed < screenheight)
                     objBluePlayer.Y += objBluePlayer.Speed;
 
-            //The following statement starts the game when the player(s) have pushed the space-button.
+            //Deze instructie zorgt ervoor dat het spel begint wanneer de speler(s) op de spatie-knop hebben gedrukt.
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && SpaceReady == false)
             {
                 SpaceReady = true;
                 ResetGame();
             }
 
-            //The following statement states how the game will end.
+            //De volgende verklaring geeft aan hoe het spel zal eindigen..
             if (blueLives <= 0 || redLives <= 0)
-                Exit();
+            { Exit(); }
 
-            //The following statements determine how often the power ups appear.
+            //De volgende verklaringen bepalen hoe vaak de power-ups verschijnen.
             powerUpTime -=  (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (powerUpTime <= 0)
             {
@@ -292,19 +291,15 @@ namespace Game9
             base.Update(gameTime);
         }
 
-        //The following method draws the amount of lives the players have.
+        //De volgende methode tekent het aantal levens dat de spelers hebben.
         public void DrawLives(short lives, bool isRed)
         {
             for (int i = 0; i < lives; i++)
             {
-                if (isRed) //We are drawing the red player's lives in topleft corner.
-                {
-                    spriteBatch.Draw(ball, new Vector2(i * 16, 0), Color.White);
-                }
-                else //We are drawing the blue player's lives in topright corner.
-                {
-                    spriteBatch.Draw(ball, new Vector2(screenwidth - 16 - i * 16, 0), Color.White);
-                }
+                if (isRed) //We tekenen het leven van de rode speler in de rechterbovenhoek van het scherm.
+                { spriteBatch.Draw(ball, new Vector2(i * 16, 0), Color.White); }
+                else //We tekenen het leven van de blauwde speler in de linkerbovenhoek van het scherm.
+                { spriteBatch.Draw(ball, new Vector2(screenwidth - 16 - i * 16, 0), Color.White); }
             }
         }
 
@@ -319,23 +314,17 @@ namespace Game9
                 for (int i = 0; i < objball.Length; i++)
                 {
                     if (objball[i] != null)
-                    {
-                        spriteBatch.Draw(ball, objball[i].Position, Color.White);
-                    }
+                    { spriteBatch.Draw(ball, objball[i].Position, Color.White); }
                 }
                 DrawLives(redLives, true);
                 DrawLives(blueLives, false);
                 spriteBatch.Draw(bluePlayerSprite, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
                 if (pwp != null)
-                {
-                    spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White);
-                }
+                { spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White); }
 
             }
             spriteBatch.End();
-
-
             base.Draw(gameTime);
         }
     }
