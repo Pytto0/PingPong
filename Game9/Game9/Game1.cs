@@ -22,7 +22,6 @@ namespace Game9
         const float ballAcceleration = 0.002f, pwpTime = 15f;//extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
             playerStartY = screenheight / 2, playerLength = 95, playerWidth = 15, ballHeight = 15, ballWidth = 15, pwpHeight = 32, pwpWidth = 32;
-
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball[] objball = new Ball[5];
@@ -59,7 +58,10 @@ namespace Game9
 
             base.Initialize();
         }
-        
+
+        //The following method resets the position of the ball rather than resetting the game.
+        //Since the ball is the only object of importance, this should be fine.
+        //(As in, it isn't as if the Players are forced to reset their position too after every score anyway.)
         protected void ResetGame()
         {
             Array.Clear(objball, 0, objball.Length);
@@ -105,6 +107,7 @@ namespace Game9
         {
             // TODO: Unload any non ContentManager content here
         }
+        //The following method is meant to regularly check where the position of the ball is, based on its corners.
         public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
         {
             if ((vect.X >= topLeft.X && vect.X <= bottomRight.X) && (vect.Y >= topLeft.Y && vect.Y <= bottomRight.Y))
@@ -114,6 +117,7 @@ namespace Game9
 
             return false;
         }
+        //The following method is meant to regularly check whether the ball has touched the Players or not.
         public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
         {
             Vector2 topRight1 = new Vector2(bottomRight1.X, topLeft1.Y);
@@ -124,7 +128,7 @@ namespace Game9
             else
                 return false;
         }
-
+        //The following method is meant to regularly check where the position of the top-left corner of the ball is.
         protected Vector2 CalculateNewballPos(int ballId)
         { 
             Vector2 pos = objball[ballId].Position;
@@ -136,7 +140,7 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
-        
+        //The following method decides by random which power up is going to be called/spawned.
         public void CreateNewPowerUp()
         {
             pwp = null;
@@ -169,11 +173,13 @@ namespace Game9
             objball[id].Speed += ballAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
             float x = objball[id].Position.X;
             float y = objball[id].Position.Y;
+            //The following statement makes the ball bounce the walls by means of fully inverting its direction.
             if (y >= screenheight - ballHeight || y <= 0)
             {
                 objball[id].Direction = -objball[id].Direction;
                 wall.Play();
             }
+            //The following statement makes the ball bounce upon hitting the paddle.
             if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
             || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
             {
@@ -182,6 +188,7 @@ namespace Game9
                 paddle.Play();
                 objball[id].Direction += rnd.Next(-10, 10);
             }
+            //The following statement regularly checks whether the ball hits the power up or not.
             if (pwp != null)
             {
                 if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
@@ -204,6 +211,8 @@ namespace Game9
                     pwp = null;
                 }
             }
+            //The following statements declare when a player has scored.
+            //If the ball passes through a certain x-value, their opponent's life will decrease by one.
             if (x + ballWidth > blueStartX)
             {
                 blueLives--;
@@ -216,9 +225,7 @@ namespace Game9
                 miss.Play();
                 ResetGame();
             }
-        
-    }
-
+        }
 
          /// <summary>
          /// Allows the game to run logic such as updating the world,
@@ -235,10 +242,11 @@ namespace Game9
                 }
             }
 
+            //The escape button terminates the program run.
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-           
+            Exit();
 
+            //The following statements mention the reactions on the players' actions.
             if (Keyboard.GetState().IsKeyDown(Keys.W))
                 if (objRedPlayer.Y - objRedPlayer.Speed > 0)
                     objRedPlayer.Y -= objRedPlayer.Speed;
@@ -252,25 +260,21 @@ namespace Game9
                     objBluePlayer.Y -= objBluePlayer.Speed;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
                 if (objBluePlayer.Y + playerLength + objBluePlayer.Speed < screenheight)
-                {
                     objBluePlayer.Y += objBluePlayer.Speed;
-                }
-            }
-            // Up above is mentioned the reactions on the players' actions.
 
-            
-
+            //The following statement starts the game when the player(s) have pushed the space-button.
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && SpaceReady == false)
             {
                 SpaceReady = true;
                 ResetGame();
             }
 
+            //The following statement states how the game will end.
             if (blueLives <= 0 || redLives <= 0)
                 Exit();
 
+            //The following statements determine how often the power ups appear.
             powerUpTime -=  (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Debug.WriteLine("PWP: " + powerUpTime);
             if (powerUpTime <= 0)
@@ -289,15 +293,16 @@ namespace Game9
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         /// 
 
+        //The following method draws the amount of lives the players have.
         public void DrawLives(short lives, bool isRed)
         {
             for (int i = 0; i < lives; i++)
             {
-                if (isRed) //we are drawing red's lives (their lives should be in topleft corner)
+                if (isRed) //We are drawing the red player's lives in topleft corner.
                 {
                     spriteBatch.Draw(ball, new Vector2(i * 16, 0), Color.White);
                 }
-                else //we are drawing blue's lives (their lives should be in topright corner)
+                else //We are drawing the blue player's lives in topright corner.
                 {
                     spriteBatch.Draw(ball, new Vector2(screenwidth - 16 - i * 16, 0), Color.White);
                 }
