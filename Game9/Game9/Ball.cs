@@ -13,7 +13,8 @@ namespace Game9
         public float Speed { get; set; }
         public Vector2 Position { get; set; }
 
-        public Ball(int direction, float speed, Vector2 position) {
+        public Ball(int direction, float speed, Vector2 position)
+        {
             Direction = direction;
             Speed = speed;
             Position = position;

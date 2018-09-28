@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System;
+using System.Data;
+using System.Diagnostics;
 
 namespace Game9
 {
@@ -17,28 +19,29 @@ namespace Game9
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
-        const float ballAcceleration = 0.005f; //extra speed gained per gametick.
-        const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60, 
-            playerStartY = screenheight/2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15, pwpLength = 32, pwpWidth = 32;
+        const float ballAcceleration = 0.002f, pwpTime = 15f;//extra speed gained per gametick.
+        const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
+            playerStartY = screenheight / 2, playerLength = 95, playerWidth = 15, ballLength = 15, ballWidth = 15, pwpLength = 32, pwpWidth = 32;
+
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
         //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
-        Ball objball;
+        Ball[] objball = new Ball[5];
         Player objBluePlayer, objRedPlayer;
         SpriteFont font;
-        short redLives = 3, blueLives = 3;
-        float powerUpTime = 3f;
+        short redLives = 5, blueLives = 5, amountOfBalls = 0;
+        float powerUpTime;
         PowerUp pwp;
         bool SpaceReady = false;
+
 
         public Game1() 
         {
             this.Window.Position = new Point(400, 100);
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            objball[0] = new Ball(0, 0, ballBegin);
             graphics.PreferredBackBufferHeight = screenheight;
             graphics.PreferredBackBufferWidth = screenwidth;
-
-            objball = new Ball(0, 0, ballBegin);
             objBluePlayer = new Player(10, blueStartX, playerStartY);
             objRedPlayer = new Player(10, redStartX, playerStartY);
         }
@@ -58,13 +61,18 @@ namespace Game9
         
         protected void ResetGame()
         {
+            Array.Clear(objball, 0, objball.Length);
+            powerUpTime = pwpTime;
             Random rnd = new Random();
-            objball.Speed = 7;
-            objball.Position = ballBegin;
+            objball[0] = new Ball(0, 7, ballBegin);
+            amountOfBalls = 1;
+            //objball[0].Speed = 7;
             if (rnd.Next(1, 3) == 1)
-                objball.Direction = rnd.Next(-75, 75);
+                objball[0].Direction = rnd.Next(-75, 75);
             else
-                objball.Direction = rnd.Next(105, 255);
+                objball[0].Direction = rnd.Next(105, 255);
+
+            //Debug.WriteLine("TESTET#%");
         }
 
         /// <summary>
@@ -103,7 +111,7 @@ namespace Game9
                 return true;
             }
 
-            else { return false; }
+            return false;
         }
         public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
         {
@@ -116,13 +124,13 @@ namespace Game9
                 return false;
         }
 
-        protected Vector2 CalculateNewballPos()
-        {
-            Vector2 pos = objball.Position;
+        protected Vector2 CalculateNewballPos(int ballId)
+        { 
+            Vector2 pos = objball[ballId].Position;
             float x = pos.X;
             float y = pos.Y;
-            double dir = objball.Direction * Math.PI/180;
-            float speed = objball.Speed;
+            double dir = objball[ballId].Direction * Math.PI/180;
+            float speed = objball[ballId].Speed;
             x = (float) (x + Math.Cos(dir) * speed);
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
@@ -130,10 +138,13 @@ namespace Game9
         
         public void CreateNewPowerUp()
         {
+            pwp = null;
             Random rnd = new Random();
-            short choice = (short)Math.Round((rnd.NextDouble() * 3) - 0.501) ;
-            short x =  (short) (Math.Round(rnd.NextDouble() - blueStartX) * screenwidth + redStartX);
+            short choice = (short)rnd.Next(2);
+            short x =  (short) (rnd.NextDouble() * (blueStartX - (screenwidth/4 + redStartX))+ redStartX + screenwidth/4);
+            //Debug.WriteLine(screenwidth - redStartX);
             short y = (short) Math.Round(rnd.NextDouble()  * screenheight);
+            //Debug.WriteLine("x2: " + x + " y2: " + y);
             switch (choice)
             {
                 case 0:
@@ -147,7 +158,7 @@ namespace Game9
                     break;
             }
             pwp = new PowerUp(x, y, powerUpSprite);
-            
+            //Debug.WriteLine("Hello World.");
 
         }
 
@@ -159,34 +170,86 @@ namespace Game9
          /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            for (int i = 0; i < objball.Length; i++)
+            {
+                if (objball[i] != null)
+                {
+                    //Debug.WriteLine("ID: " + i + " X: " + objball[i].Position.X + " Y: " + objball[i].Position.Y);
+                    //Debug.Write("Speed: " + objball[i].Speed + " x: " + objball[i].Position.X + " y: " + objball[i].Position.Y); 
+                    objball[i].Position = CalculateNewballPos(i);
+                    objball[i].Speed += ballAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    float x = objball[i].Position.X;
+                    float y = objball[i].Position.Y;
+                    Random a = new Random();
+                    double b = a.NextDouble();
+                    /*if(b < 0.01)
+                    {
+                        if (amountOfBalls < 2)
+                        {
+                            Debug.WriteLine("B: " + b + "amountOfBalls: " + amountOfBalls);
+                            objball[amountOfBalls] = new Ball((int)(-0.5 * objball[i].Direction), objball[i].Speed - 2, objball[i].Position);
+                            amountOfBalls += 1;
+                            b += 0.1;
 
-            objball.Position = CalculateNewballPos();
-            objball.Speed += ballAcceleration;
-            float x = objball.Position.X;
-            float y = objball.Position.Y;
-            //if (x > screenwidth)
-            if (x + ballWidth > blueStartX)
-            {
-                blueLives--;
-                miss.Play();
-                ResetGame();
+                        }
+                    }  */
+                    if (y >= screenheight - ballLength || y <= 0)
+                    {
+                        objball[i].Direction = -objball[i].Direction;
+                        wall.Play();
+                    }
+                    if (IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
+                    || IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
+                    {
+                        Random rnd = new Random();
+                        objball[i].Direction = 180 - objball[i].Direction;
+                        paddle.Play();
+                        objball[i].Direction += rnd.Next(-10, 10);
+                        //F: Dit zorgt er voor dat de bal iets willekeuriger terugkaatst.
+                        //G: Oh. Zullen we het dan meteen implementeren?
+                    }
+                    if (pwp != null)
+                    {
+                        if (IsRectangleInRectangle(CalculateNewballPos(i), new Vector2(CalculateNewballPos(i).X + ballWidth, CalculateNewballPos(i).Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
+                        {
+
+                            if (pwp.Sprite == PU_Heart)
+                            {
+                                if (redLives < 5)
+                                    redLives++;
+                                if (blueLives < 5)
+                                    blueLives++;
+                            }
+                            else if (pwp.Sprite == PU_Speed)
+                            {
+                                objball[i].Speed += 2;
+                            }
+                            else if (pwp.Sprite == PU_Plus && amountOfBalls < 5)
+                            {
+                                objball[amountOfBalls] = new Ball((int)(-0.5 * objball[i].Direction), objball[i].Speed - 2, objball[i].Position);
+                                amountOfBalls += 1;
+                            }
+                            pwp = null;
+                        }
+                    }
+                    if (x + ballWidth > blueStartX)
+                    {
+                        blueLives--;
+                        miss.Play();
+                        ResetGame();
+                    }
+                    if (x < redStartX + playerWidth)
+                    {
+                        redLives--;
+                        miss.Play();
+                        ResetGame();
+                    }
+                }
             }
-            //if (x < 0)
-            if (x < redStartX + playerWidth)
-            {
-                redLives--;
-                miss.Play();
-                ResetGame();
-            }
-            if (y >= screenheight - ballLength || y <= 0)
-            {
-                objball.Direction = -objball.Direction;
-                wall.Play();
-            }
-            // Up above is mentioned the code which calls the ball position.
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+                //objball[amountOfBalls] = new Ball(-objball[0].Direction, objball[0].Speed - 2, objball[0].Position);
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
                 if (objRedPlayer.Y - objRedPlayer.Speed > 0)
@@ -209,15 +272,7 @@ namespace Game9
             }
             // Up above is mentioned the reactions on the players' actions.
 
-            if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
-                || IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
-            {
-                objball.Direction = 180 - objball.Direction;
-                paddle.Play();
-                // objball.Direction += rnd.Next(-10, 10);
-                //F: Dit zorgt er voor dat de bal iets willekeuriger terugkaatst.
-                //G: Oh. Zullen we het dan meteen implementeren?
-            }
+            
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && SpaceReady == false)
             {
@@ -226,24 +281,17 @@ namespace Game9
             }
 
             if (blueLives <= 0 || redLives <= 0)
-            {
                 Exit();
-            }
-            powerUpTime -= 0.005f;
-            if(powerUpTime <= 0)
-            {
-                objball.Position = new Vector2(objball.Position.X + 100, objball.Position.Y); 
-                CreateNewPowerUp();
-                powerUpTime = 3f;
-            }
-            if (pwp != null)
-            {
-                if (IsRectangleInRectangle(CalculateNewballPos(), new Vector2(CalculateNewballPos().X + ballWidth, CalculateNewballPos().Y + ballLength), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpLength)))
-                {
-                    pwp = null;
-                }
-            }
 
+            powerUpTime -=  (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //Debug.WriteLine("PWP: " + powerUpTime);
+            if (powerUpTime <= 0)
+            {
+                //objball[i].Position = new Vector2(objball[i].Position.X, objball[i].Position.Y);
+                CreateNewPowerUp();
+               // Debug.WriteLine("test12345");
+                powerUpTime = pwpTime;
+            }
             base.Update(gameTime);
         }
 
@@ -276,13 +324,20 @@ namespace Game9
             { spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black); }
             else
             {
-                spriteBatch.Draw(ball, objball.Position, Color.White);
+                for (int i = 0; i < objball.Length; i++)
+                {if (objball[i] != null)
+                    {
+                        spriteBatch.Draw(ball, objball[i].Position, Color.White);
+                    }
+                }
                 DrawLives(redLives, true);
                 DrawLives(blueLives, false);
                 spriteBatch.Draw(bluePlayer, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
                 if (pwp != null)
                 {
+                   // Debug.WriteLine("test1");
+                    //Debug.WriteLine("X: " + pwp.X.ToString() + " Y: " + pwp.Y.ToString());
                     spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White);
                 }
 
