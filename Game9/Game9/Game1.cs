@@ -21,9 +21,13 @@ namespace Game9
         Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
         const float ballAcceleration = 0.002f, pwpTime = 15f;//extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
-            playerStartY = screenheight / 2, playerLength = 95, playerWidth = 15, ballHeight = 15, ballWidth = 15, pwpHeight = 32, pwpWidth = 32;
+            playerStartY = screenheight / 2, playerHeight = 95, playerWidth = 16, ballHeight = 15, ballWidth = 15, pwpHeight = 32, pwpWidth = 32;
+
+        const short blueScoreLine = blueStartX + 2, redScoreLine = redStartX - 2,
+            redFrontLine = redStartX + playerWidth, blueFrontLine = blueStartX;
+
         //bluestartx: x coordinate where the blue player starts. redStartX: x coordinate where the red player starts.
-        //playerlength: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
+        //playerHeight: length of the rectangle either player is controlling. Playerwidth: how wide the rectangle is the player is controlling.
         Ball[] objball = new Ball[5];
         Player objBluePlayer, objRedPlayer;
         SpriteFont font;
@@ -31,7 +35,7 @@ namespace Game9
         float powerUpTime;
         PowerUp pwp;
         bool SpaceReady = false;
-        Rectangle ballRect, bluePlayerRect, redPlayerRect, pwpRect;
+        Rectangle ballRect, ballNextRect, bluePlayerRect, redPlayerRect, pwpRect;
 
 
         public Game1() 
@@ -40,28 +44,20 @@ namespace Game9
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             objball[0] = new Ball(0, 0, ballBegin);
+            //ball[0] bestaat altijd. Deze kunnen we als referentiepunt gebruiken om bijvoorbeeld
+            //te kijken wat de breedte is van een bal (ze hebben immers allemaal dezelfde sprite).
             graphics.PreferredBackBufferHeight = screenheight;
             graphics.PreferredBackBufferWidth = screenwidth;
             objBluePlayer = new Player(10, blueStartX, playerStartY);
             objRedPlayer = new Player(10, redStartX, playerStartY);
         }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
-        //The following method resets the position of the ball rather than resetting the game.
-        //Since the ball is the only object of importance, this should be fine.
-        //(As in, it isn't as if the Players are forced to reset their position too after every score anyway.)
+        //The following method resets the position of the ball, as well as removing extra balls.
+        //We remove them with the Array.Clear function.
         protected void ResetGame()
         {
             Array.Clear(objball, 0, objball.Length);
@@ -69,46 +65,36 @@ namespace Game9
             Random rnd = new Random();
             objball[0] = new Ball(0, 7, ballBegin);
             amountOfBalls = 1;
-            //objball[0].Speed = 7;
             if (rnd.Next(1, 3) == 1)
                 objball[0].Direction = rnd.Next(-75, 75);
             else
                 objball[0].Direction = rnd.Next(105, 255);
 
-            //Debug.WriteLine("TESTET#%");
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
             ball = Content.Load<Texture2D>("Graphics/bal");
             bluePlayerSprite = Content.Load<Texture2D>("Graphics/blauweSpeler");
             redPlayer = Content.Load<Texture2D>("Graphics/rodeSpeler");
             PU_Plus = Content.Load<Texture2D>("Graphics/powerup_ballplus");
             PU_Speed = Content.Load<Texture2D>("Graphics/powerup_ballspeed");
             PU_Heart = Content.Load<Texture2D>("Graphics/powerup_heart");
+
             miss = Content.Load<SoundEffect>("Audio/PONG.SOUND_MISS");
             paddle = Content.Load<SoundEffect>("Audio/PONG.SOUND_PADDLE");
             wall = Content.Load<SoundEffect>("Audio/PONG.SOUND_WALL");
+
             font = Content.Load<SpriteFont>("Font");
-            // TODO: use this.Content to load your game content here
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
         //The following method is meant to regularly check where the position of the ball is, based on its corners.
-        public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
+        /*public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
         {
             if ((vect.X >= topLeft.X && vect.X <= bottomRight.X) && (vect.Y >= topLeft.Y && vect.Y <= bottomRight.Y))
             {
@@ -116,9 +102,9 @@ namespace Game9
             }
 
             return false;
-        }
+        } */
         //The following method is meant to regularly check whether the ball has touched the Players or not.
-        public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
+        /*public bool IsRectangleInRectangle(Vector2 topLeft1, Vector2 bottomRight1, Vector2 topLeft2, Vector2 bottomRight2)
         {
             Vector2 topRight1 = new Vector2(bottomRight1.X, topLeft1.Y);
             Vector2 bottomLeft1 = new Vector2(topLeft1.X, bottomRight1.Y);
@@ -127,9 +113,9 @@ namespace Game9
                 return true;
             else
                 return false;
-        }
+        } */
         //The following method is meant to regularly check where the position of the top-left corner of the ball is.
-        protected Vector2 CalculateNewballPos(int ballId)
+        public Vector2 CalculateNewballPos(int ballId)
         { 
             Vector2 pos = objball[ballId].Position;
             float x = pos.X;
@@ -140,6 +126,20 @@ namespace Game9
             y = (float) (y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
+        //Kaatst de bal terug, met een kleine verandering in hoek om een beetje willekeurigheid toe te voegen.
+        //De boolean horizontalbounce wordt gebruikt om te kijken of de bal tegen de onder/bovenkant van het scherm
+        //aan botst of tegen een balk van een speler aan.
+        public void Bounce(int ballId, bool horizontalBounce)
+        {
+            Random rnd = new Random();
+            if (horizontalBounce)
+                objball[ballId].Direction = 180 - objball[ballId].Direction;
+            else
+                objball[ballId].Direction = -objball[ballId].Direction;
+
+            objball[ballId].Direction += rnd.Next(-10, 10);
+        }
+
         //The following method decides by random which power up is going to be called/spawned.
         public void CreateNewPowerUp()
         {
@@ -161,37 +161,49 @@ namespace Game9
                     break;
             }
             pwp = new PowerUp(x, y, powerUpSprite);
-            //Debug.WriteLine("Hello World.");
-
         }
 
         public void ExecuteBallPhysics(short id, GameTime gameTime)
         {
-            ballRect = new Rectangle((int) objball[id].Position.X, (int) objball[id].Position.Y, (int) (objball[id].Position.X + ballWidth), (int) (objball[id].Position.Y + ballHeight));
-            bluePlayerRect = new Rectangle((int) objBluePlayer.X, );
+            ballRect = new Rectangle((int) objball[id].Position.X, (int) objball[id].Position.Y, ballWidth, ballHeight);
+            ballNextRect = new Rectangle((int) (CalculateNewballPos(id).X), (int) (CalculateNewballPos(id).Y), ballWidth, ballHeight);
+            //ballRect is de vierhoek waar de bal zich nu in bevind. ballNextRect is de vierhoek waar de bal zich de volgende frame in zal bevinden.
+
+            bluePlayerRect = new Rectangle(objBluePlayer.X, objBluePlayer.Y, playerWidth, playerHeight);
+            redPlayerRect = new Rectangle(objRedPlayer.X, objRedPlayer.Y, playerWidth, playerHeight);
+
             objball[id].Position = CalculateNewballPos(id);
             objball[id].Speed += ballAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds;
             float x = objball[id].Position.X;
             float y = objball[id].Position.Y;
+
             //The following statement makes the ball bounce the walls by means of fully inverting its direction.
             if (y >= screenheight - ballHeight || y <= 0)
             {
-                objball[id].Direction = -objball[id].Direction;
+                Bounce(id, false);
                 wall.Play();
             }
             //The following statement makes the ball bounce upon hitting the paddle.
-            if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerLength))
-            || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerLength)))
+            //if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerHeight))
+            //|| IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerHeight)))
+            if (ballNextRect.Intersects(bluePlayerRect))
             {
-                Random rnd = new Random();
-                objball[id].Direction = 180 - objball[id].Direction;
+                objball[id].Position = new Vector2(objball[id].Position.X - 10, objball[id].Position.Y);
+                Bounce(id, true);
                 paddle.Play();
-                objball[id].Direction += rnd.Next(-10, 10);
             }
-            //The following statement regularly checks whether the ball hits the power up or not.
+            if(ballNextRect.Intersects(redPlayerRect))
+            {
+                objball[id].Position = new Vector2(objball[id].Position.X + 10, objball[id].Position.Y);
+                Bounce(id, true);
+                paddle.Play();
+            }
+            //The following statement regularly checks whether the ball hits a powerUp or not.
             if (pwp != null)
             {
-                if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
+                pwpRect = new Rectangle(pwp.X, pwp.Y, pwp.Sprite.Width, pwp.Sprite.Height);
+                if (ballNextRect.Intersects(pwpRect))
+                    //IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
                 {
 
                     if (pwp.Sprite == PU_Heart)
@@ -213,13 +225,13 @@ namespace Game9
             }
             //The following statements declare when a player has scored.
             //If the ball passes through a certain x-value, their opponent's life will decrease by one.
-            if (x + ballWidth > blueStartX)
+            if (x  > blueScoreLine)
             {
                 blueLives--;
                 miss.Play();
                 ResetGame();
             }
-            if (x < redStartX + playerWidth)
+            if (x < redScoreLine)
             {
                 redLives--;
                 miss.Play();
@@ -227,13 +239,9 @@ namespace Game9
             }
         }
 
-         /// <summary>
-         /// Allows the game to run logic such as updating the world,
-         /// checking for collisions, gathering input, and playing audio.
-         /// </summary>
-         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //Loops through all the objects of the ball we have, applying all their movement changes.
             for (short i = 0; i < objball.Length; i++)
             {
                 if (objball[i] != null)
@@ -252,7 +260,7 @@ namespace Game9
                     objRedPlayer.Y -= objRedPlayer.Speed;
             
             if (Keyboard.GetState().IsKeyDown(Keys.S))
-                if (objRedPlayer.Y + playerLength + objRedPlayer.Speed < screenheight)
+                if (objRedPlayer.Y + playerHeight + objRedPlayer.Speed < screenheight)
                     objRedPlayer.Y += objRedPlayer.Speed;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
@@ -260,7 +268,7 @@ namespace Game9
                     objBluePlayer.Y -= objBluePlayer.Speed;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                if (objBluePlayer.Y + playerLength + objBluePlayer.Speed < screenheight)
+                if (objBluePlayer.Y + playerHeight + objBluePlayer.Speed < screenheight)
                     objBluePlayer.Y += objBluePlayer.Speed;
 
             //The following statement starts the game when the player(s) have pushed the space-button.
@@ -276,22 +284,13 @@ namespace Game9
 
             //The following statements determine how often the power ups appear.
             powerUpTime -=  (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //Debug.WriteLine("PWP: " + powerUpTime);
             if (powerUpTime <= 0)
             {
-                //objball[i].Position = new Vector2(objball[i].Position.X, objball[i].Position.Y);
                 CreateNewPowerUp();
-               // Debug.WriteLine("test12345");
                 powerUpTime = pwpTime;
             }
             base.Update(gameTime);
         }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        /// 
 
         //The following method draws the amount of lives the players have.
         public void DrawLives(short lives, bool isRed)
@@ -314,11 +313,12 @@ namespace Game9
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
             if (!SpaceReady)
-            { spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black); }
+                spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black); 
             else
             {
                 for (int i = 0; i < objball.Length; i++)
-                {if (objball[i] != null)
+                {
+                    if (objball[i] != null)
                     {
                         spriteBatch.Draw(ball, objball[i].Position, Color.White);
                     }
@@ -329,15 +329,12 @@ namespace Game9
                 spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
                 if (pwp != null)
                 {
-                   // Debug.WriteLine("test1");
-                    //Debug.WriteLine("X: " + pwp.X.ToString() + " Y: " + pwp.Y.ToString());
                     spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White);
                 }
 
             }
             spriteBatch.End();
 
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
