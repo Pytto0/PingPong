@@ -18,7 +18,7 @@ namespace Game9
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SoundEffect wall, miss, paddle;
-        Vector2 ballBegin = new Vector2(screenwidth/2, screenheight/2);
+        Vector2 ballBegin = new Vector2(screenwidth / 2, screenheight / 2);
         const float ballAcceleration = 0.002f, pwpTime = 15f;//extra speed gained per gametick.
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
             playerStartY = screenheight / 2, playerHeight = 95, playerWidth = 16, ballHeight = 15, ballWidth = 15, pwpHeight = 32, pwpWidth = 32;
@@ -38,7 +38,7 @@ namespace Game9
         Rectangle ballRect, ballNextRect, bluePlayerRect, redPlayerRect, pwpRect;
 
 
-        public Game1() 
+        public Game1()
         {
             this.Window.Position = new Point(400, 100);
             graphics = new GraphicsDeviceManager(this);
@@ -60,16 +60,19 @@ namespace Game9
         //We verwijderen ze met de Array.Clear functie.
         protected void ResetGame()
         {
-            Array.Clear(objball, 0, objball.Length);
-            powerUpTime = pwpTime;
-            Random rnd = new Random();
-            objball[0] = new Ball(0, 7, ballBegin);
-            amountOfBalls = 1;
-            if (rnd.Next(1, 3) == 1)
-                objball[0].Direction = rnd.Next(-75, 75);
-            else
-                objball[0].Direction = rnd.Next(105, 255);
-
+            Einde();
+            if (!eindeSpel)
+            {
+                Array.Clear(objball, 0, objball.Length);
+                powerUpTime = pwpTime;
+                Random rnd = new Random();
+                objball[0] = new Ball(0, 7, ballBegin);
+                amountOfBalls = 1;
+                if (rnd.Next(1, 3) == 1)
+                    objball[0].Direction = rnd.Next(-75, 75);
+                else
+                    objball[0].Direction = rnd.Next(105, 255);
+            }
         }
 
         protected override void LoadContent()
@@ -91,7 +94,7 @@ namespace Game9
         }
 
         protected override void UnloadContent()
-        {}
+        { }
         //De volgende methode is bedoeld om te controleren waar de positie van de bal is, op basis van de hoeken ervan.
         /*public bool IsVectorInRectangle(Vector2 vect, Vector2 topLeft, Vector2 bottomRight)
         {
@@ -126,14 +129,14 @@ namespace Game9
 
         //De volgende methode is bedoeld om te controleren waar de linkerbovenhoek positie van de bal is.
         public Vector2 CalculateNewballPos(int ballId)
-        { 
+        {
             Vector2 pos = objball[ballId].Position;
             float x = pos.X;
             float y = pos.Y;
-            double dir = objball[ballId].Direction * Math.PI/180;
+            double dir = objball[ballId].Direction * Math.PI / 180;
             float speed = objball[ballId].Speed;
-            x = (float) (x + Math.Cos(dir) * speed);
-            y = (float) (y + Math.Sin(dir) * speed);
+            x = (float)(x + Math.Cos(dir) * speed);
+            y = (float)(y + Math.Sin(dir) * speed);
             return new Vector2(x, y);
         }
         //De volgende methode kaatst de bal terug, met een kleine verandering in hoek om een beetje willekeurigheid toe te voegen.
@@ -156,8 +159,8 @@ namespace Game9
             pwp = null;
             Random rnd = new Random();
             short choice = (short)rnd.Next(2);
-            short x =  (short) (rnd.NextDouble() * (blueStartX - (screenwidth/4 + redStartX))+ redStartX + screenwidth/4);
-            short y = (short) Math.Round(rnd.NextDouble()  * (screenheight - pwpHeight));
+            short x = (short)(rnd.NextDouble() * (blueStartX - (screenwidth / 4 + redStartX)) + redStartX + screenwidth / 4);
+            short y = (short)Math.Round(rnd.NextDouble() * (screenheight - pwpHeight));
             switch (choice)
             {
                 case 0:
@@ -175,8 +178,8 @@ namespace Game9
 
         public void ExecuteBallPhysics(short id, GameTime gameTime)
         {
-            ballRect = new Rectangle((int) objball[id].Position.X, (int) objball[id].Position.Y, ballWidth, ballHeight);
-            ballNextRect = new Rectangle((int) (CalculateNewballPos(id).X), (int) (CalculateNewballPos(id).Y), ballWidth, ballHeight);
+            ballRect = new Rectangle((int)objball[id].Position.X, (int)objball[id].Position.Y, ballWidth, ballHeight);
+            ballNextRect = new Rectangle((int)(CalculateNewballPos(id).X), (int)(CalculateNewballPos(id).Y), ballWidth, ballHeight);
             //ballRect is de vierhoek waar de bal zich nu in bevindt. ballNextRect is de vierhoek waar de bal zich de volgende frame in zal bevinden.
 
             bluePlayerRect = new Rectangle(objBluePlayer.X, objBluePlayer.Y, playerWidth, playerHeight);
@@ -187,34 +190,38 @@ namespace Game9
             float x = objball[id].Position.X;
             float y = objball[id].Position.Y;
 
-            //Deze verklaring zorgt ervoor dat de bal tegen de muren stuitert door de richting volledig om te keren.
-            if (y >= screenheight - ballHeight || y <= 0)
-            {
-                Bounce(id, false);
-                wall.Play();
-            }
-            //De volgende verklaring maakt de bal stuiterend als het balken raakt.
-            /*if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerHeight))
-            || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerHeight)))*/
-            if (ballNextRect.Intersects(bluePlayerRect))
-            {
-                objball[id].Position = new Vector2(objball[id].Position.X - 10, objball[id].Position.Y);
-                Bounce(id, true);
-                paddle.Play();
-            }
-            if(ballNextRect.Intersects(redPlayerRect))
-            {
-                objball[id].Position = new Vector2(objball[id].Position.X + 10, objball[id].Position.Y);
-                Bounce(id, true);
-                paddle.Play();
-            }
 
+            Einde();
+            if (!eindeSpel)
+            {
+                //Deze verklaring zorgt ervoor dat de bal tegen de muren stuitert door de richting volledig om te keren.
+                if (y >= screenheight - ballHeight || y <= 0)
+                {
+                    Bounce(id, false);
+                    wall.Play();
+                }
+                //De volgende verklaring maakt de bal stuiterend als het balken raakt.
+                /*if (IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objBluePlayer.X, objBluePlayer.Y), new Vector2(objBluePlayer.X + playerWidth, objBluePlayer.Y + playerHeight))
+                || IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(objRedPlayer.X, objRedPlayer.Y), new Vector2(objRedPlayer.X + playerWidth, objRedPlayer.Y + playerHeight)))*/
+                if (ballNextRect.Intersects(bluePlayerRect))
+                {
+                    objball[id].Position = new Vector2(objball[id].Position.X - 10, objball[id].Position.Y);
+                    Bounce(id, true);
+                    paddle.Play();
+                }
+                if (ballNextRect.Intersects(redPlayerRect))
+                {
+                    objball[id].Position = new Vector2(objball[id].Position.X + 10, objball[id].Position.Y);
+                    Bounce(id, true);
+                    paddle.Play();
+                }
+            }
             //De volgende verklaring checkt regelmatig of de bal een power up raakt of niet.
             if (pwp != null)
             {
                 pwpRect = new Rectangle(pwp.X, pwp.Y, pwp.Sprite.Width, pwp.Sprite.Height);
                 if (ballNextRect.Intersects(pwpRect))
-                    //IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
+                //IsRectangleInRectangle(CalculateNewballPos(id), new Vector2(CalculateNewballPos(id).X + ballWidth, CalculateNewballPos(id).Y + ballHeight), new Vector2(pwp.X, pwp.Y), new Vector2(pwp.X + pwpWidth, pwp.Y + pwpHeight)))
                 {
                     if (pwp.Sprite == PU_Heart)
                     {
@@ -233,20 +240,32 @@ namespace Game9
                     pwp = null;
                 }
             }
-            //De volgende verklaringen verklaren wanneer een speler heeft gescoord.
-            //Als de bal een bepaalde x-waarde passeert, neemt de leven van zijn tegenstander met één af.
-            if (x  > blueScoreLine)
+
+            Einde();
+            if (!eindeSpel)
             {
-                blueLives--;
-                miss.Play();
-                ResetGame();
+                //De volgende verklaringen verklaren wanneer een speler heeft gescoord.
+                //Als de bal een bepaalde x-waarde passeert, neemt de leven van zijn tegenstander met één af.
+                if (x > blueScoreLine)
+                {
+                    blueLives--;
+                    miss.Play();
+                    ResetGame();
+                }
+                if (x < redScoreLine)
+                {
+                    redLives--;
+                    miss.Play();
+                    ResetGame();
+                }
             }
-            if (x < redScoreLine)
-            {
-                redLives--;
-                miss.Play();
-                ResetGame();
-            }
+        }
+
+        public bool Einde()
+        {
+            if (blueLives <= 0 || redLives <= 0)
+            { return eindeSpel = true; }
+            else { return false; }
         }
 
         protected override void Update(GameTime gameTime)
@@ -260,13 +279,13 @@ namespace Game9
 
             //De escape knop beëindigt het program.
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
+                Exit();
 
             //De volgende verklaringen reageren op de acties van de spelers.
             if (Keyboard.GetState().IsKeyDown(Keys.W))
                 if (objRedPlayer.Y - objRedPlayer.Speed > 0)
                     objRedPlayer.Y -= objRedPlayer.Speed;
-            
+
             if (Keyboard.GetState().IsKeyDown(Keys.S))
                 if (objRedPlayer.Y + playerHeight + objRedPlayer.Speed < screenheight)
                     objRedPlayer.Y += objRedPlayer.Speed;
@@ -284,13 +303,6 @@ namespace Game9
             {
                 SpaceReady = true;
                 ResetGame();
-            }
-
-            //De volgende verklaring geeft aan hoe het spel zal eindigen.
-            if (blueLives <= 0 || redLives <= 0)
-            {
-                eindeSpel = true;
-                Exit();
             }
 
             //De volgende verklaringen bepalen hoe vaak de power-ups verschijnen.
@@ -319,22 +331,39 @@ namespace Game9
         {
             GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
-            if (!SpaceReady)
-                spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black); 
+            Einde();
+            if (!eindeSpel)
+            {
+                if (!SpaceReady)
+                    spriteBatch.DrawString(font, "Press space to begin", new Vector2(screenwidth / 2, screenheight / 2), Color.Black);
+                else
+                {
+                    for (int i = 0; i < objball.Length; i++)
+                    {
+                        if (objball[i] != null)
+                        { spriteBatch.Draw(ball, objball[i].Position, Color.White); }
+                    }
+                    DrawLives(redLives, true);
+                    DrawLives(blueLives, false);
+                    spriteBatch.Draw(bluePlayerSprite, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
+                    spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
+                    if (pwp != null)
+                    { spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White); }
+
+                }
+            }
             else
             {
-                for (int i = 0; i < objball.Length; i++)
+                if (blueLives <= 0)
                 {
-                    if (objball[i] != null)
-                    { spriteBatch.Draw(ball, objball[i].Position, Color.White); }
+                    spriteBatch.DrawString(font, "Red Wins", new Vector2(screenwidth / 2, screenheight / 2), Color.Black);
+                    spriteBatch.DrawString(font, "Click Escape to Exit the Game", new Vector2(screenwidth / 2, screenheight / 2), Color.Black);
                 }
-                DrawLives(redLives, true);
-                DrawLives(blueLives, false);
-                spriteBatch.Draw(bluePlayerSprite, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
-                spriteBatch.Draw(redPlayer, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
-                if (pwp != null)
-                { spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White); }
-
+                if (redLives <= 0)
+                {
+                    spriteBatch.DrawString(font, "Blue Wins", new Vector2(screenwidth / 2, screenheight / 2), Color.Black);
+                    spriteBatch.DrawString(font, "Click Escape to Exit the Game", new Vector2(screenwidth / 2, screenheight / 2), Color.Black);
+                }
             }
             spriteBatch.End();
             base.Draw(gameTime);
