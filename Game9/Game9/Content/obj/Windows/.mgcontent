@@ -4,12 +4,12 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/bal.png</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/blauweSpeler.png</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/rodeSpeler.png</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Font.spritefont</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_ballplus.png</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_ballspeed.png</File>
-    <File>C:/Users/flori/OneDrive/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_heart.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/bal.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/blauweSpeler.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/rodeSpeler.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Font.spritefont</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_ballplus.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_ballspeed.png</File>
+    <File>C:/Users/Zone Q11/Documents/GitHub/PingPong/Game9/Game9/Content/Graphics/powerup_heart.png</File>
   </SourceFiles>
 </SourceFileCollection>

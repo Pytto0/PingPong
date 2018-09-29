@@ -70,11 +70,12 @@ namespace Game9
             pwpHeight = (short)PU_Plus.Height;
             blueFrontLine = blueStartX;
             redFrontLine = (short)(redStartX + playerWidth);
-            blueScoreLine = (short)(blueFrontLine + (screenwidth - blueStartX));
-            redScoreLine = (short)(redFrontLine - redStartX - playerWidth);
-            /*blueScoreLine = (short)(blueFrontLine + 8);
-            redScoreLine = (short)(redFrontLine - 8);*/
+            blueScoreLine = (short)(blueFrontLine + 8);
+            redScoreLine = (short)(redFrontLine - 8);
             //De score lijn zit vlak achter de voorste lijn van zowel de rode als de blauwe balk.
+            /*blueScoreLine = (short)(blueFrontLine + (screenwidth - blueStartX));
+            redScoreLine = (short)(redFrontLine - redStartX - playerWidth);*/
+            //"Other."
 
         }
 
