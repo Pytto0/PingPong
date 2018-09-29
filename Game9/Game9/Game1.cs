@@ -73,7 +73,7 @@ namespace Game9
             blueFrontLine = blueStartX;
             redFrontLine = (short)(redStartX + playerWidth);
             blueScoreLine = (short)(blueFrontLine + 8);
-            redScoreLine = (short)(redFrontLine - 8);
+            redScoreLine = (short)(redFrontLine - 8); //De score lijn zit vlak achter de voorste lijn van zowel de rode als de blauwe balk.
 
         }
 
@@ -144,13 +144,17 @@ namespace Game9
         van het scherm aan botst of tegen een balk van een speler aan.*/
         public void Bounce(int ballId, bool horizontalBounce)
         {
+            int dir = objBall[ballId].Direction;
             Random rnd = new Random();
             if (horizontalBounce)
-                objBall[ballId].Direction = 180 - objBall[ballId].Direction;
+            {
+                dir = 180 - dir;
+                dir += rnd.Next(-10, 10);
+            }
             else
-                objBall[ballId].Direction = -objBall[ballId].Direction;
+                dir = -dir;
+            objBall[ballId].Direction = dir;
 
-            objBall[ballId].Direction += rnd.Next(-5, 5);
         }
 
         //De volgende methode bepaalt door welke power-up wordt geroept/gespawnt. De x waarde wordt zo gekozen dat deze
@@ -160,7 +164,7 @@ namespace Game9
             pwp = null;
             Random rnd = new Random();
             short choice = (short)rnd.Next(2); //Kiest een willekeurige waarde: 0, 1 of 2. Aan de hand hiervan bepalen we wat voor soort powerup we krijgen.
-            short x = (short)((rnd.NextDouble() * (blueFrontLine - screenwidth / 4) + redFrontLine + screenwidth / 4) - pwpWidth);
+            short x = (short)((rnd.NextDouble() * (blueFrontLine - screenwidth / 4 - redFrontLine) + redFrontLine + screenwidth / 4) - pwpWidth);
             short y = (short)Math.Round(rnd.NextDouble() * (screenheight - pwpHeight));
             switch (choice)
             {
@@ -195,6 +199,19 @@ namespace Game9
                 float x = objBall[id].Position.X;
                 float y = objBall[id].Position.Y;
 
+                //Wat we allereerst controleren, is of een speler een punt heeft gescoord.
+                if (x > blueScoreLine)
+                {
+                    blueLives--;
+                    miss.Play();
+                    ResetGame();
+                }
+                if (x < redScoreLine)
+                {
+                    redLives--;
+                    miss.Play();
+                    ResetGame();
+                }
 
                 //Met de volgende paar if-statements zorgen we er voor dat de bal stuitert als deze tegen een muur
                 //of tegen de balk van speler aankomt.
@@ -203,13 +220,13 @@ namespace Game9
                     Bounce(id, false);
                     wall.Play();
                 }
-                if (ballNextRect.Intersects(bluePlayerRect))
+                if (ballNextRect.Intersects(bluePlayerRect) || ballRect.Intersects(bluePlayerRect))
                 {
                     objBall[id].Position = new Vector2(objBall[id].Position.X - 10, objBall[id].Position.Y);
                     Bounce(id, true);
                     paddle.Play();
                 }
-                if (ballNextRect.Intersects(redPlayerRect))
+                if (ballNextRect.Intersects(redPlayerRect) || ballRect.Intersects(redPlayerRect))
                 {
                     objBall[id].Position = new Vector2(objBall[id].Position.X + 10, objBall[id].Position.Y);
                     Bounce(id, true);
@@ -241,20 +258,6 @@ namespace Game9
                         }
                         pwp = null;
                     }
-                }
-
-                //De code hieronder bepaalt of het spel is afgelopen.
-                if (x > blueScoreLine)
-                {
-                    blueLives--;
-                    miss.Play();
-                    ResetGame();
-                }
-                if (x < redScoreLine)
-                {
-                    redLives--;
-                    miss.Play();
-                    ResetGame();
                 }
             }
             
