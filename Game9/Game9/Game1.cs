@@ -221,7 +221,7 @@ namespace Game9
                     pwpRect = new Rectangle(pwp.X, pwp.Y, pwp.Sprite.Width, pwp.Sprite.Height);
                     if (ballNextRect.Intersects(pwpRect))
                     {
-                        if (pwp.Sprite == PU_Heart)
+                        if (pwp.Sprite == PU_Heart) 
                         {
                             if (redLives < 5)
                                 redLives++;
@@ -232,14 +232,18 @@ namespace Game9
                             objBall[id].Speed += 2;
                         else if (pwp.Sprite == PU_Plus && amountOfBalls < 5)
                         {
-                            objBall[amountOfBalls] = new Ball((int)(-0.5 * objBall[id].Direction), objBall[id].Speed - 2, objBall[id].Position);
+                            //Met de code hieronder maken we een in onze array een nieuwe bal aan die id amountOfBalls meekrijgt
+                            //(dus altijd een nog niet bezette id). De richting van de bal is gelijk aan de helft van de richting van
+                            //de bal die deze powerup aanraakte, de snelheid is gelijk aan de snelheid van de bal die de powerup aanraakte
+                            //maar dan 2 pixels per frame minder, en de positie is gelijk aan de positie van de bal die deze powerup aanraakte.
+                            objBall[amountOfBalls] = new Ball((int)(0.5 * objBall[id].Direction), objBall[id].Speed - 2, objBall[id].Position);
                             amountOfBalls += 1;
                         }
                         pwp = null;
                     }
                 }
 
-                //Bepaalt of het spel is afgelopen.
+                //De code hieronder bepaalt of het spel is afgelopen.
                 if (x > blueScoreLine)
                 {
                     blueLives--;
