@@ -21,8 +21,8 @@ namespace Game9
         Vector2 ballBegin = new Vector2(screenwidth / 2, screenheight / 2);
         const float ballAcceleration = 0.004f, pwpTime = 15f;
         //Met ballAcceleration geven we aan hoeveel de snelheid van een bal omhoog gaat per frame.
-        //pwp staat in de rest van deze class altijd voor PowerUp, dus de pwpTime is de hoeveelheid tijd totdat er 
-        //een nieuwe powerup ontstaat.
+        /*pwp staat in de rest van deze class altijd voor PowerUp, dus de pwpTime is de hoeveelheid tijd
+        totdat er een nieuwe powerup ontstaat.*/
 
         const short screenwidth = 1200, screenheight = 800, blueStartX = screenwidth - 60, redStartX = 60,
             playerStartY = screenheight / 2;
@@ -58,9 +58,7 @@ namespace Game9
         }
 
         protected override void Initialize()
-        {
-            base.Initialize();
-        }
+        { base.Initialize(); }
 
         protected void IntialiseVariables()
         {
@@ -72,8 +70,11 @@ namespace Game9
             pwpHeight = (short)PU_Plus.Height;
             blueFrontLine = blueStartX;
             redFrontLine = (short)(redStartX + playerWidth);
-            blueScoreLine = (short)(blueFrontLine + 8);
-            redScoreLine = (short)(redFrontLine - 8); //De score lijn zit vlak achter de voorste lijn van zowel de rode als de blauwe balk.
+            blueScoreLine = (short)(blueFrontLine + (screenwidth - blueStartX));
+            redScoreLine = (short)(redFrontLine - redStartX - playerWidth);
+            /*blueScoreLine = (short)(blueFrontLine + 8);
+            redScoreLine = (short)(redFrontLine - 8);*/
+            //De score lijn zit vlak achter de voorste lijn van zowel de rode als de blauwe balk.
 
         }
 
@@ -113,8 +114,9 @@ namespace Game9
 
             font = Content.Load<SpriteFont>("Font");
 
-            IntialiseVariables(); //Nu alle sprites geladen zijn, kunnen we er gegevens (zoals hoogte of breedte) 
-            //over opvragen en kunnen we daarmee een aantal van onze globale variables intialiseren.
+            IntialiseVariables();
+            /*Nu alle sprites geladen zijn, kunnen we er gegevens (zoals hoogte of breedte) 
+            over opvragen en kunnen we daarmee een aantal van onze globale variables intialiseren.*/
         }
 
         protected override void UnloadContent()
@@ -157,8 +159,8 @@ namespace Game9
 
         }
 
-        //De volgende methode bepaalt door welke power-up wordt geroept/gespawnt. De x waarde wordt zo gekozen dat deze
-        //in het midden van het scherm zit.
+        /*De volgende methode bepaalt door welke power-up wordt geroept/gespawnt.
+        De x waarde wordt zo gekozen dat deze in het midden van het scherm zit.*/
         public void CreateNewPowerUp()
         {
             pwp = null;
@@ -260,7 +262,6 @@ namespace Game9
                     }
                 }
             }
-            
         }
 
         public bool IsGameEnded()
@@ -315,8 +316,6 @@ namespace Game9
                 CreateNewPowerUp();
                 pwpCounter = pwpTime;
             }
-
-
             base.Update(gameTime);
         }
 
@@ -349,11 +348,9 @@ namespace Game9
                     DrawLives(blueLives, false);
                     spriteBatch.Draw(bluePlayerSprite, new Vector2(objBluePlayer.X, objBluePlayer.Y), Color.White);
                     spriteBatch.Draw(redPlayerSprite, new Vector2(objRedPlayer.X, objRedPlayer.Y), Color.White);
-                if (pwp != null)
-                {
-                    spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White);
+                    if (pwp != null)
+                    { spriteBatch.Draw(pwp.Sprite, new Vector2(pwp.X, pwp.Y), Color.White); }
                 }
-            }
 
             else
             {
